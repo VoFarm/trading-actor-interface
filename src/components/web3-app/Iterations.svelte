@@ -1,12 +1,14 @@
 <script>
-  import Accordion from "https://denopkg.com/crewdevio/Snel-carbon@main/components/Accordion/Accordion.svelte";
-  import AccordionItem from "https://denopkg.com/crewdevio/Snel-carbon@main/components/Accordion/AccordionItem.svelte";
-  import StructuredList from "https://denopkg.com/crewdevio/Snel-carbon@main/components/StructuredList/StructuredList.svelte";
-  import StructuredListRow from "https://denopkg.com/crewdevio/Snel-carbon@main/components/StructuredList/StructuredListRow.svelte";
-  import StructuredListCell from "https://denopkg.com/crewdevio/Snel-carbon@main/components/StructuredList/StructuredListCell.svelte";
-  import StructuredListBody from "https://denopkg.com/crewdevio/Snel-carbon@main/components/StructuredList/StructuredListBody.svelte";
-  import Tag from "https://denopkg.com/crewdevio/Snel-carbon@main/components/Tag/Tag.svelte";
-  import Link from "https://denopkg.com/crewdevio/Snel-carbon@main/components/Link/Link.svelte";
+  import {
+    Accordion,
+    AccordionItem,
+    StructuredList,
+    StructuredListRow,
+    StructuredListCell,
+    StructuredListBody,
+    Tag,
+    Link
+  } from "carbon-components-svelte";
 
   export let iterations
   export let counter

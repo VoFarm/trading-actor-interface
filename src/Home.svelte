@@ -1,41 +1,36 @@
-<svelte:head>
-  <link
-      rel="stylesheet"
-      href="https://unpkg.com/carbon-components-svelte/css/white.css"
-  />
-</svelte:head>
-
 <script>
+  import "carbon-components-svelte/css/white.css";
+  import { Router, Route } from "svelte-navigator";
+  import Root from "./pages/Root.svelte";
+  import Web3App from "./pages/Web3App.svelte";
+  import Header from "./components/root/Header.svelte";
+
   export let amountOfIterations
   export let transactionExplorer
-
-  import Main from "@/components/Main.svelte";
-  import Dashboard from "@/components/Dashboard.svelte";
-  import SiteHeader from "@/components/SiteHeader.svelte";
-  import { fade } from "svelte/transition";
-
+  export let url = "";
 </script>
 
-<main transition:fade>
-  <SiteHeader/>
-  <div style="height: 3rem"></div>
-  <Main/>
-  <hr>
-  <Dashboard amountOfIterations={amountOfIterations} transactionExplorer={transactionExplorer}/>
-</main>
+<Router url="{url}">
+  <div>
+    <Route path="/">
+      <header>
+        <Header/>
+      </header>
+      <Root/>
+    </Route>
+    <Route path="app/*">
+      <Web3App amountOfIterations="{amountOfIterations}" transactionExplorer="{transactionExplorer}"/>
+    </Route>
+  </div>
+</Router>
 
 <style>
-    main {
-        text-align: center;
-        padding: 1em;
-        max-width: 240px;
-        margin: 0 auto;
-    }
 
-    @media (min-width: 640px) {
-        main {
-            max-width: none;
-        }
+    header {
+        width: 60%;
+        margin: 0 auto;
+        margin-top: 36px;
+        text-align: right;
     }
 
     :global(.bx--accordion__item--active .bx--accordion__content) {
