@@ -15,6 +15,7 @@
   let amountIterationsValue = 0
   let tradedIterationsValue = 0
   let calculatedFees = 0
+  let secondaryName = ""
 
   function fetchGraphData() {
     if (contractAddress !== "") {
@@ -24,7 +25,7 @@
         graphCounter = await countResponse.json()
 
         let primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')
-        let secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
+        secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
 
         // get past iterations
         for (let i = graphCounter; i >= ((graphCounter - amountOfPrices) < 0 ? 0 : (graphCounter - amountOfPrices)); i--) {
@@ -34,12 +35,12 @@
           graphData.push({
             "group": primaryName,
             "date": price.date,
-            "value": Number(price.primary) / (10 ** 18)
+            "primary": Number(price.primary) / (10 ** 18)
           })
           graphData.push({
             "group": secondaryName,
             "date": price.date,
-            "value": Number(price.secondary) / (10 ** 18)
+            "secondary": Number(price.secondary) / (10 ** 18)
           })
         }
         // assign to create iterations component
@@ -129,7 +130,7 @@
 {#if contractAddress !== ""}
   <main id="dashboard">
     <h2 style="margin-top: -52px;">Chart</h2>
-    <Chart bind:graphData="{graphData}"/>
+    <Chart bind:graphData="{graphData}" bind:secondaryName={secondaryName}/>
     <h2 style="margin-top: 48px;">Dashboard</h2>
     <Grid narrow class="titleGrid">
       <Row padding="30px">

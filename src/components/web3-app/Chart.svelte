@@ -3,6 +3,7 @@
   import "@carbon/charts/styles.min.css";
 
   export let graphData
+  export let secondaryName
   let chart
 
   onMount(async () => {
@@ -19,14 +20,29 @@
     title: "",
     height: "400px",
     tooltip: {
+      "valueFormatter": (value, type) => {
+        if (type === "Time") {
+          return value.toTimeString()
+        }
+        return Number(value).toFixed(18)
+        },
       "showTotal": false
     },
     axes: {
 		"left": {
-			"mapsTo": "value",
+			"mapsTo": "primary",
 			"title": "Amount of Token",
 			"scaleType": "linear",
 			"ticks": {"min": 0}
+		},
+    "right": {
+			"mapsTo": "secondary",
+			"title": "Amount of Token",
+			"scaleType": "linear",
+			"ticks": {"min": 0},
+      "correspondingDatasets": [
+				secondaryName
+			]
 		},
 		"bottom": {
 			"title": "Time",
