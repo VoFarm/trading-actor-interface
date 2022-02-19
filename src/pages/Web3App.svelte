@@ -7,6 +7,7 @@
 
   export let amountOfIterations
   export let transactionExplorer
+  export let amountOfPrices
 
   let contractAddress = ""
   let url = "app"
@@ -20,7 +21,7 @@
       <Route path="/">
         {#if contractAddress !== ""}
           <Dashboard bind:contractAddress={contractAddress} amountOfIterations={amountOfIterations}
-                     transactionExplorer={transactionExplorer}/>
+                     transactionExplorer={transactionExplorer} amountOfPrices="{amountOfPrices}"/>
         {/if}
       </Route>
       <Route path="deposit">
