@@ -79,7 +79,7 @@
 {#if iterations}
   <Accordion align="start">
     {#each iterations as iteration}
-      <AccordionItem style="margin: 0 auto; text-align-last: center; max-width: 1440px;">
+      <AccordionItem style="margin: 0 auto; text-align-last: center">
         <svelte:fragment slot="title">
           <h5 class="fragment">Iteration {counter - iterations.indexOf(iteration)}</h5>
           <div class="fragment">

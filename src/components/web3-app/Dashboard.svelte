@@ -1,16 +1,52 @@
 <script>
   import Iterations from "./Iterations.svelte";
   import { Column, Grid, Row, Tile } from "carbon-components-svelte";
+  import Chart from "./Chart.svelte";
 
   export let amountOfIterations
   export let transactionExplorer
   export let contractAddress
+  export let amountOfPrices
   let iterations = []
+  let graphData = []
   let counter = 0
+  let graphCounter = 0
   let successfulIterations = 0
   let amountIterationsValue = 0
   let tradedIterationsValue = 0
   let calculatedFees = 0
+
+  function fetchGraphData() {
+    if (contractAddress !== "") {
+      graphData = []
+      // get max amount of iterations
+      fetch(`/${ contractAddress }/priceCount`).then(async (countResponse) => {
+        graphCounter = await countResponse.json()
+
+        let primaryName = await (await fetch(`/${ contractAddress }/primaryName`)).text()
+        let secondaryName = await (await fetch(`/${ contractAddress }/secondaryName`)).text()
+
+        // get past iterations
+        for (let i = graphCounter; i >= ((graphCounter - amountOfPrices) < 0 ? 0 : (graphCounter - amountOfPrices)); i--) {
+          const response = await fetch(`/${ contractAddress }/price?id=${ i }`)
+          let price = JSON.parse(await response.json())
+
+          graphData.push({
+            "group": primaryName,
+            "date": price.date,
+            "value": Number(price.primary) / (10 ** 18)
+          })
+          graphData.push({
+            "group": secondaryName,
+            "date": price.date,
+            "value": Number(price.secondary) / (10 ** 18)
+          })
+        }
+        // assign to create iterations component
+        graphData = graphData
+      })
+    }
+  }
 
   function fetchData() {
     if (contractAddress !== "") {
@@ -85,31 +121,39 @@
 
   $:{
     fetchData()
+    fetchGraphData()
     contractAddress = contractAddress
   }
 </script>
 
 {#if contractAddress !== ""}
-  <h2 style="padding: 25px">Dashboard</h2>
-  <Grid narrow class="titleGrid">
-    <Row padding="30px">
-      <Column>
-        <Tile>
-          {successfulIterations} / {amountIterationsValue} Successful Iterations
-        </Tile>
-      </Column>
-      <Column>
-        <Tile>
-          {tradedIterationsValue} Swap Operations
-        </Tile>
-      </Column>
-      <Column>
-        <Tile>
-          {calculatedFees} Eth Fees in the Past {amountIterationsValue} Transactions
-        </Tile>
-      </Column>
-    </Row>
-  </Grid>
+  <main id="dashboard">
+    <h2 style="margin-top: -52px;">Chart</h2>
+    <Chart bind:graphData="{graphData}"/>
+    <h2 style="margin-top: 48px;">Dashboard</h2>
+    <Grid narrow class="titleGrid">
+      <Row padding="30px">
+        <Column>
+          <Tile>
+            {successfulIterations} / {amountIterationsValue} Successful Iterations
+          </Tile>
+        </Column>
+        <Column>
+          <Tile>
+            {tradedIterationsValue} Swap Operations
+          </Tile>
+        </Column>
+        <Column>
+          <Tile>
+            {calculatedFees} Eth Fees in the Past {amountIterationsValue} Transactions
+          </Tile>
+        </Column>
+      </Row>
+    </Grid>
 
-  <Iterations iterations={iterations} counter={counter} transactionExplorer={transactionExplorer}/>
+    <Iterations iterations={iterations} counter={counter} transactionExplorer={transactionExplorer}/>
+  </main>
 {/if}
+
+<style>
+</style>
