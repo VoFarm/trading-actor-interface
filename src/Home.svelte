@@ -8,6 +8,7 @@
   export let amountOfIterations
   export let transactionExplorer
   export let amountOfPrices
+  export let chainId
   export let url = "";
 </script>
 
@@ -20,7 +21,7 @@
       <Root/>
     </Route>
     <Route path="app/*">
-      <Web3App amountOfIterations="{amountOfIterations}" transactionExplorer="{transactionExplorer}" amountOfPrices="{amountOfPrices}"/>
+      <Web3App chainId="{chainId}" amountOfIterations="{amountOfIterations}" transactionExplorer="{transactionExplorer}" amountOfPrices="{amountOfPrices}"/>
     </Route>
   </div>
 </Router>

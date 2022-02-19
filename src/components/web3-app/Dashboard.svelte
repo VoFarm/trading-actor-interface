@@ -1,12 +1,14 @@
 <script>
   import Iterations from "./Iterations.svelte";
-  import { Column, Grid, Row, Tile } from "carbon-components-svelte";
+  import { Column, Grid, Row, SkeletonPlaceholder, Tile } from "carbon-components-svelte";
   import Chart from "./Chart.svelte";
+  import { connected, chainId as chainIdWeb3 } from 'svelte-web3'
 
   export let amountOfIterations
   export let transactionExplorer
   export let contractAddress
   export let amountOfPrices
+  export let chainId
   let iterations = []
   let graphData = []
   let counter = 0
@@ -16,6 +18,9 @@
   let tradedIterationsValue = 0
   let calculatedFees = 0
   let secondaryName = ""
+  let depositedBalance = 0
+  let depositedCurrency = "ETH"
+  let roi = 5
 
   function fetchGraphData() {
     if (contractAddress !== "") {
@@ -97,7 +102,7 @@
    * @return {number}
    */
   function tradedIterations() {
-    return iterations.filter((iteration) => iteration.traded !== "hold").length
+    return iterations.filter((iteration) => iteration.traded === "buy" || iteration.traded === "sell").length
   }
 
   /**
@@ -130,9 +135,29 @@
 {#if contractAddress !== ""}
   <main id="dashboard">
     <h2 style="margin-top: -52px;">Chart</h2>
-    <Chart bind:graphData="{graphData}" bind:secondaryName={secondaryName}/>
+    {#if graphData.length <= 0}
+      <SkeletonPlaceholder style="height: 400px; width: 100%;"/>
+    {:else }
+      <Chart bind:graphData="{graphData}" bind:secondaryName={secondaryName}/>
+    {/if}
     <h2 style="margin-top: 48px;">Dashboard</h2>
     <Grid narrow class="titleGrid">
+      {#if $connected && parseInt($chainIdWeb3, 16) === chainId}
+        <Row padding="30px">
+          <Column>
+            <Tile>
+              Deposited Balance
+              <div class="userAccount">{depositedBalance} {depositedCurrency}</div>
+            </Tile>
+          </Column>
+          <Column>
+            <Tile>
+              Return On Investment
+              <div class="userAccount" style="color: {roi > 0 ? 'green' : roi < 0 ? 'red' : 'unset'}">{roi}%</div>
+            </Tile>
+          </Column>
+        </Row>
+      {/if}
       <Row padding="30px">
         <Column>
           <Tile>
@@ -151,10 +176,16 @@
         </Column>
       </Row>
     </Grid>
-
-    <Iterations iterations={iterations} counter={counter} transactionExplorer={transactionExplorer}/>
+    {#if iterations.length <= 0}
+      <SkeletonPlaceholder style="height: 400px; width: 100%;"/>
+    {:else }
+      <Iterations iterations={iterations} counter={counter} transactionExplorer={transactionExplorer}/>
+    {/if}
   </main>
 {/if}
 
 <style>
+    .userAccount {
+        padding-top: 8px;
+    }
 </style>

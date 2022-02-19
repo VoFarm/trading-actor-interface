@@ -23,6 +23,7 @@
     "carbon-components-svelte": "^0.58.2",
     "carbon-icons-svelte": "^10.44.4",
     "sirv-cli": "^2.0.0",
-    "svelte-navigator": "^3.1.5"
+    "svelte-navigator": "^3.1.5",
+    "svelte-web3": "^3.3.6"
   }
 }
