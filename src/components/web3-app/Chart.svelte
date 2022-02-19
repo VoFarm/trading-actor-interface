@@ -18,12 +18,15 @@
     options={{
     title: "",
     height: "400px",
+    tooltip: {
+      "showTotal": false
+    },
     axes: {
 		"left": {
 			"mapsTo": "value",
 			"title": "Amount of Token",
 			"scaleType": "linear",
-			"min": 0
+			"ticks": {"min": 0}
 		},
 		"bottom": {
 			"title": "Time",

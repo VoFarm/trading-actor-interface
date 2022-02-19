@@ -23,8 +23,8 @@
       fetch(`/${ contractAddress }/priceCount`).then(async (countResponse) => {
         graphCounter = await countResponse.json()
 
-        let primaryName = await (await fetch(`/${ contractAddress }/primaryName`)).text()
-        let secondaryName = await (await fetch(`/${ contractAddress }/secondaryName`)).text()
+        let primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')
+        let secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
 
         // get past iterations
         for (let i = graphCounter; i >= ((graphCounter - amountOfPrices) < 0 ? 0 : (graphCounter - amountOfPrices)); i--) {
