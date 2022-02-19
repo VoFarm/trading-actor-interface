@@ -2,15 +2,17 @@
   import "carbon-components-svelte/css/white.css";
   import {
     Content,
-    Header,
+    Header, HeaderUtilities,
     SideNav, SideNavDivider,
     SideNavItems,
     SideNavLink
   } from "carbon-components-svelte";
   import { Dropdown } from "carbon-components-svelte";
   import { useNavigate } from "svelte-navigator";
+  import Account from "./Account.svelte";
 
   export let contractAddress
+  export let chainId
 
   let isSideNavOpen = true
   let selections = []
@@ -38,7 +40,11 @@
   }
 </script>
 
-<Header company="Volatility Farm" platformName="App Dashboard"/>
+<Header company="Volatility Farm" platformName="App Dashboard">
+  <HeaderUtilities>
+    <Account chainId="{chainId}"/>
+  </HeaderUtilities>
+</Header>
 <SideNav bind:isOpen={isSideNavOpen}>
   <SideNavItems>
     <SideNavLink on:click={navigateDashboard} text="Dashboard"/>

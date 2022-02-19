@@ -2,7 +2,7 @@ import Home from './Home.svelte';
 
 const home = new Home({
   target: document.body,
-  props: { amountOfIterations: 24, amountOfPrices: 50, transactionExplorer: 'https://rinkeby.etherscan.io/tx/' },
+  props: { amountOfIterations: 24, amountOfPrices: 250, transactionExplorer: 'https://rinkeby.etherscan.io/tx/', chainId: 4 },
 });
 
 export default home;

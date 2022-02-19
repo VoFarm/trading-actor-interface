@@ -8,24 +8,25 @@
   export let amountOfIterations
   export let transactionExplorer
   export let amountOfPrices
+  export let chainId
 
   let contractAddress = ""
   let url = "app"
 </script>
 
-<Header bind:contractAddress={contractAddress}/>
+<Header bind:contractAddress={contractAddress} chainId="{chainId}"/>
 
 <Content>
   <Router url="{url}">
     <div>
       <Route path="/">
         {#if contractAddress !== ""}
-          <Dashboard bind:contractAddress={contractAddress} amountOfIterations={amountOfIterations}
+          <Dashboard chainId="{chainId}" bind:contractAddress={contractAddress} amountOfIterations={amountOfIterations}
                      transactionExplorer={transactionExplorer} amountOfPrices="{amountOfPrices}"/>
         {/if}
       </Route>
       <Route path="deposit">
-        <Deposit bind:contractAddress={contractAddress}/>
+        <Deposit bind:contractAddress={contractAddress} chainId="{chainId}"/>
       </Route>
     </div>
   </Router>

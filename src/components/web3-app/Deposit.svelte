@@ -1,7 +1,9 @@
 <script>
   import { Button, Form, FormGroup, Select, SelectItem, TextInput } from "carbon-components-svelte";
+  import { connected, chainId as chainIdWeb3 } from 'svelte-web3'
 
   export let contractAddress
+  export let chainId
 </script>
 
 <div id="form">
@@ -15,10 +17,14 @@
     </FormGroup>
 
     <FormGroup>
-      <TextInput inline labelText="Amount" placeholder="0.2" />
+      <TextInput inline labelText="Amount" placeholder="0.2"/>
     </FormGroup>
 
-    <Button type="submit">Deposit</Button>
+    {#if $connected && parseInt($chainIdWeb3, 16) === chainId}
+      <Button type="submit">Deposit</Button>
+    {:else}
+      <Button disabled type="submit">Deposit</Button>
+    {/if}
   </Form>
 </div>
 
