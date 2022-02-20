@@ -140,7 +140,7 @@
     {:else }
       <Chart bind:graphData="{graphData}" bind:secondaryName={secondaryName}/>
     {/if}
-    <h2 style="margin-top: 48px;">Dashboard</h2>
+    <h2 style="margin: 48px 0 16px 0;">Dashboard</h2>
     <Grid narrow class="titleGrid">
       {#if $connected && parseInt($chainIdWeb3, 16) === chainId}
         <Row padding="30px">
