@@ -19,11 +19,16 @@
   const navigate = useNavigate();
 
   fetch("/contractList").then(async (response) => {
+    let contractNames = {}
     selections = (await response.text()).split(",")
     selections.pop()
     contractAddress = selections[0]
+
+    for (const selection in selections) {
+      contractNames[selection] = String(JSON.parse(await (await fetch(`/${ selection }/contractName`)).text())).replaceAll('"', '')
+    }
     selections = selections.map((selection) => {
-      return { id: selection, text: selection }
+      return { id: selection, text: `${ contractNames[selection] } (${ selection })` }
     })
   })
 
