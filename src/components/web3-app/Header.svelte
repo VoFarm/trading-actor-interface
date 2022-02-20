@@ -24,11 +24,14 @@
     selections.pop()
     contractAddress = selections[0]
 
-    for (const selection in selections) {
-      contractNames[selection] = String(JSON.parse(await (await fetch(`/${ selection }/contractName`)).text())).replaceAll('"', '')
+    for (const selection of selections) {
+      try {
+        contractNames[selection] = JSON.parse((await (await fetch(`/${ selection }/contractName`)).text())).replaceAll('"', '')
+      } catch {
+      }
     }
     selections = selections.map((selection) => {
-      return { id: selection, text: `${ contractNames[selection] } (${ selection })` }
+      return { id: selection, text: `${ contractNames[selection] ?? '' } (${ selection })` }
     })
   })
 
