@@ -33,9 +33,7 @@
     if (contractAddress === "" || !selections.includes(contractAddress)) {
         contractAddress = selections[0]
     } else {
-        const temp = contractAddress
-        contractAddress = ""
-        contractAddress = temp
+        updateAddress({ detail: { selectedId: contractAddress }})
     }
 
     for (const selection of selections) {
