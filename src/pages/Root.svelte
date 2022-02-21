@@ -253,7 +253,7 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-around;
-        background: #f6fbff;
+        background: #f5faff;
         padding: 25px;
     }
 
@@ -277,8 +277,9 @@
     }
 
     #bottom {
-        padding: 30vh 35vh 10vh 35vh;
-        background: white;
+        padding: 30vh 5vw 0 5vw;
+        width: 80%;
+        margin: 0 auto;
     }
 
     .bottomtitles {
