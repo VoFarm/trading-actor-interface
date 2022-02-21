@@ -29,6 +29,10 @@
 </Router>
 
 <style>
+    :global(body) {
+        background-color: #f9fcff !important;
+    }
+
     header {
         width: 60%;
         margin: 0 auto;
