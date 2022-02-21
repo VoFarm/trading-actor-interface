@@ -9,7 +9,8 @@
   export let transactionExplorer
   export let amountOfPrices
   export let chainId
-  export let url = "";
+
+  let url = "";
 </script>
 
 <Router url="{url}">
@@ -21,13 +22,13 @@
       <Root/>
     </Route>
     <Route path="app/*">
-      <Web3App chainId="{chainId}" amountOfIterations="{amountOfIterations}" transactionExplorer="{transactionExplorer}" amountOfPrices="{amountOfPrices}"/>
+      <Web3App chainId="{chainId}" amountOfIterations="{amountOfIterations}" transactionExplorer="{transactionExplorer}"
+               amountOfPrices="{amountOfPrices}"/>
     </Route>
   </div>
 </Router>
 
 <style>
-
     header {
         width: 60%;
         margin: 0 auto;
@@ -42,5 +43,9 @@
 
     :global(.bx--structured-list) {
         margin: 0 !important;
+    }
+
+    :global(.bx--dropdown__wrapper) {
+        width: 100% !important;
     }
 </style>

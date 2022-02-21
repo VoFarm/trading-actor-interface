@@ -10,8 +10,13 @@
   export let amountOfPrices
   export let chainId
 
-  let contractAddress = ""
   let url = "app"
+
+  /*
+   * root file for selected contractAddress
+   * changes can be made by the header
+   */
+  let contractAddress = ""
 </script>
 
 <Header bind:contractAddress={contractAddress} chainId="{chainId}"/>

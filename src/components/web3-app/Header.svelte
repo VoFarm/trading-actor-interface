@@ -1,13 +1,15 @@
 <script>
   import "carbon-components-svelte/css/white.css";
   import {
+    Button,
     Content,
     Header, HeaderUtilities,
     SideNav, SideNavDivider,
     SideNavItems,
-    SideNavLink
+    SideNavLink, SkeletonPlaceholder
   } from "carbon-components-svelte";
   import { Dropdown } from "carbon-components-svelte";
+  import Renew32 from "carbon-icons-svelte/lib/Renew32";
   import { useNavigate } from "svelte-navigator";
   import Account from "./Account.svelte";
 
@@ -18,10 +20,16 @@
   let selections = []
   const navigate = useNavigate();
 
-  fetch("/contractList").then(async (response) => {
+  async function getContractList() {
+    // reset inputs
+    contractAddress = ""
+    selections = []
     let contractNames = {}
+
+    const response = await fetch("/contractList")
+
+    // parse one lined list
     selections = (await response.text()).split(",")
-    selections.pop()
     contractAddress = selections[0]
 
     for (const selection of selections) {
@@ -31,9 +39,12 @@
       }
     }
     selections = selections.map((selection) => {
-      return { id: selection, text: `${ contractNames[selection] ?? '' } (${ selection })` }
-    })
-  })
+      if (!contractNames[selection]) {
+        return undefined
+      }
+      return { id: selection, text: `${ contractNames[selection] } (${ selection })` }
+    }).filter((selection) => selection)
+  }
 
   function navigateDeposit() {
     navigate("/app/deposit")
@@ -46,6 +57,8 @@
   function updateAddress(event) {
     contractAddress = event.detail.selectedId
   }
+
+  getContractList()
 </script>
 
 <Header company="Volatility Farm" platformName="App Dashboard">
@@ -66,17 +79,36 @@
 </SideNav>
 
 <Content>
-  <Dropdown
-      on:select={updateAddress}
-      titleText="Contact"
-      selectedId="{contractAddress}"
-      items={selections}
-  />
+  <div id="contentWrapper">
+    {#if selections.length !== 0}
+      <Dropdown
+          id="contractSelector"
+          on:select={updateAddress}
+          titleText="Contracts"
+          selectedId="{contractAddress}"
+          items={selections}
+      />
+    {:else}
+      <SkeletonPlaceholder style="height: 45px; width: 100%;"/>
+    {/if}
+    <div id="refreshButton">
+      <Button on:click={getContractList} kind="primary" iconDescription="Reload" icon={Renew32}/>
+    </div>
+  </div>
 </Content>
 
 <style>
-    :global(.bx--btn) {
-        margin: 12px auto !important;
+    #contentWrapper {
+        display: inline-flex;
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: nowrap;
+        justify-content: space-evenly;
+        align-items: flex-end;
+    }
+
+    #refreshButton {
+        margin: 0 16px !important;
     }
 
     :global(.bx--side-nav__items) {

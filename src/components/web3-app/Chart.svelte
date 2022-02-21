@@ -3,6 +3,7 @@
   import "@carbon/charts/styles.min.css";
 
   export let graphData
+  export let primaryName
   export let secondaryName
   let chart
 
@@ -11,6 +12,15 @@
     chart = charts.LineChart;
   });
 
+  const formatYAxes = (value) => {
+    const formatted = Number(value).toFixed(8)
+    const splitted = formatted.split(".")
+    if (splitted[1] === "00000000") {
+      return splitted[0]
+    }
+    return formatted
+  }
+
 </script>
 
 <svelte:component
@@ -18,7 +28,7 @@
     data={graphData}
     options={{
     title: "",
-    height: "400px",
+    height: "350px",
     tooltip: {
       "valueFormatter": (value, type) => {
         if (type === "Time") {
@@ -31,18 +41,18 @@
     axes: {
 		"left": {
 			"mapsTo": "primary",
-			"title": "Amount of Token",
+			"title": primaryName,
 			"scaleType": "linear",
-			"ticks": {"min": 0}
-		},
+			"ticks": {"formatter": (value) => formatYAxes(value)},
+			},
     "right": {
 			"mapsTo": "secondary",
-			"title": "Amount of Token",
+			"title": secondaryName,
 			"scaleType": "linear",
-			"ticks": {"min": 0},
       "correspondingDatasets": [
 				secondaryName
-			]
+			],
+			"ticks": {"formatter": (value) => formatYAxes(value)},
 		},
 		"bottom": {
 			"title": "Time",

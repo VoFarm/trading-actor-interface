@@ -17,44 +17,54 @@
   let amountIterationsValue = 0
   let tradedIterationsValue = 0
   let calculatedFees = 0
+  let primaryName = ""
   let secondaryName = ""
   let depositedBalance = 0
   let depositedCurrency = "ETH"
   let roi = 5
 
-  function fetchGraphData() {
+  /**
+   * fetch and restructure graph data
+   *
+   * @return {Promise<void>}
+   */
+  async function fetchGraphData() {
+    graphData = []
     if (contractAddress !== "") {
-      graphData = []
       // get max amount of iterations
-      fetch(`/${ contractAddress }/priceCount`).then(async (countResponse) => {
-        graphCounter = await countResponse.json()
+      graphCounter = await (await fetch(`/${ contractAddress }/priceCount`)).json()
+      primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')
+      secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
 
-        let primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')
-        secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
-
-        // get past iterations
-        for (let i = graphCounter; i >= ((graphCounter - amountOfPrices) < 0 ? 0 : (graphCounter - amountOfPrices)); i--) {
-          const response = await fetch(`/${ contractAddress }/price?id=${ i }`)
-          let price = JSON.parse(await response.json())
-
-          graphData.push({
-            "group": primaryName,
-            "date": price.date,
-            "primary": Number(price.primary) / (10 ** 18)
-          })
-          graphData.push({
-            "group": secondaryName,
-            "date": price.date,
-            "secondary": Number(price.secondary) / (10 ** 18)
-          })
-        }
-        // assign to create iterations component
-        graphData = graphData
-      })
+      try {
+        const response = await (await fetch(`/${ contractAddress }/priceRange?lastID=${ (counter - amountOfPrices) < 0 ? 0 : (counter - amountOfPrices) }`)).json()
+        graphData = response.map((data) => {
+          data = JSON.parse(data)
+          return [
+            {
+              "group": primaryName,
+              "date": data.date,
+              "primary": Number(data.primary) / (10 ** 18)
+            },
+            {
+              "group": secondaryName,
+              "date": data.date,
+              "secondary": Number(data.secondary) / (10 ** 18)
+            }
+          ]
+        }).flatMap(value => value)
+      } catch {
+        graphData = []
+      }
     }
   }
 
-  function fetchData() {
+  /**
+   * fetch iteration data
+   *
+   * @return {Promise<void>}
+   */
+  async function fetchIteration() {
     if (contractAddress !== "") {
       iterations = []
       counter = 0
@@ -62,19 +72,18 @@
       amountIterationsValue = 0
       tradedIterationsValue = 0
       calculatedFees = 0
-      // get max amount of iterations
-      fetch(`/${ contractAddress }/count`).then(async (countResponse) => {
-        counter = await countResponse.json()
 
-        // get past iterations
-        for (let i = counter; i >= ((counter - amountOfIterations) < 0 ? 0 : (counter - amountOfIterations)); i--) {
-          const response = await fetch(`/${ contractAddress }/iteration?id=${ i }`)
-          iterations.push(await response.json())
-        }
-        // assign to create iterations component
-        iterations = iterations
-        refreshDashboardStats()
-      })
+      // get max amount of iterations
+      const countResponse = await fetch(`/${ contractAddress }/count`)
+      counter = await countResponse.json()
+
+      // get past iterations
+      try {
+        iterations = await (await fetch(`/${ contractAddress }/iterationRange?lastID=${ (counter - amountOfIterations) < 0 ? 0 : (counter - amountOfIterations) }`)).json()
+      } catch {
+        iterations = []
+      }
+      refreshDashboardStats()
     }
   }
 
@@ -114,10 +123,9 @@
     return iterations.reduce((prev, iteration) => prev + iteration.tx.reduce((prev, current) => current.gasLimit * current.gasPrice + prev, 0), 0) / (10 ** 18)
   }
 
-  function drawDashboard() {
-    return iterations.length > 0 && contractAddress !== ""
-  }
-
+  /**
+   * refresh all components with new data
+   */
   function refreshDashboardStats() {
     successfulIterations = amountSuccessfulIterations()
     amountIterationsValue = amountIterations()
@@ -126,19 +134,18 @@
   }
 
   $:{
-    fetchData()
+    fetchIteration()
     fetchGraphData()
-    contractAddress = contractAddress
   }
 </script>
-
+<h2></h2>
 {#if contractAddress !== ""}
   <main id="dashboard">
-    <h2 style="margin-top: -52px;">Chart</h2>
+    <h2 style="margin-top: -68px;">Chart</h2>
     {#if graphData.length <= 0}
-      <SkeletonPlaceholder style="height: 400px; width: 100%;"/>
+      <SkeletonPlaceholder style="height: 350px; width: 100%;"/>
     {:else }
-      <Chart bind:graphData="{graphData}" bind:secondaryName={secondaryName}/>
+      <Chart bind:graphData="{graphData}" bind:primaryName={primaryName} bind:secondaryName={secondaryName}/>
     {/if}
     <h2 style="margin: 48px 0 16px 0;">Dashboard</h2>
     <Grid narrow class="titleGrid">
