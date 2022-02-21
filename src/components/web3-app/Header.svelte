@@ -22,7 +22,6 @@
 
   async function getContractList() {
     // reset inputs
-    contractAddress = ""
     selections = []
     let contractNames = {}
 
