@@ -33,7 +33,9 @@
     if (contractAddress === "" || !selections.includes(contractAddress)) {
         contractAddress = selections[0]
     } else {
-        contractAddress = contractAddress
+        const temp = contractAddress
+        contractAddress = ""
+        contractAddress = temp
     }
 
     for (const selection of selections) {
