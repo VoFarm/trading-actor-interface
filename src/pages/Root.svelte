@@ -277,7 +277,7 @@
     }
 
     #bottom {
-        padding: 30vh 35vh 35vh;
+        padding: 30vh 35vh 10vh 35vh;
         background: white;
     }
 
