@@ -2,15 +2,13 @@
   import { connected, selectedAccount, chainId as chainIdWeb3 } from 'svelte-web3'
   import { defaultEvmStores } from 'svelte-web3'
   import { Button } from "carbon-components-svelte";
-  import Wallet32 from "carbon-icons-svelte/lib/Wallet32";
+  import Wallet24 from "carbon-icons-svelte/lib/Wallet24";
 
   export let chainId
 
   async function connectWallet() {
     defaultEvmStores.setProvider()
   }
-
-  chainIdWeb3.subscribe((value) => console.log(value))
 </script>
 
 {#if !$connected}
@@ -23,7 +21,7 @@
   </p>
 {:else}
   <div>
-    <Wallet32 id="walletAccount"/>
+    <Wallet24 id="walletAccount"/>
   </div>
   <p class="accountAddress">
     {$selectedAccount}
