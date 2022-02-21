@@ -136,6 +136,7 @@
   $:{
     fetchIteration()
     fetchGraphData()
+    contractAddress = contractAddress
   }
 </script>
 <h2></h2>
