@@ -70,6 +70,12 @@
     return "green"
   }
 
+  /**
+   * format date to show date and time
+   *
+   * @param iteration
+   * @return {string}
+   */
   function formatDate(iteration) {
     const date = new Date(iteration.startDate)
     return date.toDateString() + " " + date.toTimeString()
@@ -109,7 +115,7 @@
                 <StructuredListCell head>Type</StructuredListCell>
                 <StructuredListCell head>Gas Price</StructuredListCell>
                 <StructuredListCell head>Gas Limit</StructuredListCell>
-                <StructuredListCell head>Cost</StructuredListCell>
+                <StructuredListCell head>Estimated Cost</StructuredListCell>
               </StructuredListRow>
 
               <StructuredListBody>
