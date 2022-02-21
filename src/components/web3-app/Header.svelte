@@ -30,7 +30,11 @@
 
     // parse one lined list
     selections = (await response.text()).split(",")
-    contractAddress = selections[0]
+    if (contractAddress === "" || !selections.includes(contractAddress) {
+        contractAddress = selections[0]
+      } else {
+        contractAddress = contractAddress
+      }
 
     for (const selection of selections) {
       try {
