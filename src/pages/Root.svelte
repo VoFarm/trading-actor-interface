@@ -83,8 +83,8 @@
       </i>
     </h2>
     <div class="section">
-      <div>
-        <img style="padding:0 50px" width="750px"
+      <div style="width: 75%">
+        <img style="padding:0 50px" width="100%"
              src="https://user-images.githubusercontent.com/43786652/139266203-69b676da-f8ed-43f8-a139-79593b64562d.png"
              alt="CeFi vs DeFi">
       </div>
@@ -150,8 +150,8 @@
         </span>
       </p>
     </UnorderedList>
-    <div>
-      <img style="padding:0 50px" width="750px"
+    <div style="width: 80%">
+      <img style="padding:0 50px" width="100%"
            src="https://user-images.githubusercontent.com/43786652/139266230-d3123e62-098c-466b-8712-915985f8961d.png"
            alt="VolatilityFarm">
     </div>
@@ -253,8 +253,9 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-around;
-        background: #f6fbff;
+        background: #f3f8ff;
         padding: 25px;
+        box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.08);
     }
 
     #logo {
@@ -277,13 +278,15 @@
     }
 
     #bottom {
-        padding: 30vh 35vh 35vh;
-        background: white;
+        max-width: unset;
+        margin: 35vh auto 0;
+        width: 90vw;
+        padding: 25px 30px;
     }
 
     .bottomtitles {
         margin: 36px auto;
-        margin-top: 64px;
+        margin-top: 128px;
         text-align: center;
     }
 

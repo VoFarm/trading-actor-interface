@@ -21,28 +21,25 @@
   const navigate = useNavigate();
 
   async function getContractList() {
-    // reset inputs
-    selections = []
-    let contractNames = {}
-
     const response = await fetch("/contractList")
 
     // parse one lined list
-    selections = (await response.text()).split(",")
-    
-    if (contractAddress === "" || !selections.includes(contractAddress)) {
-        contractAddress = selections[0]
+    let tempSelection = (await response.text()).split(",")
+    let contractNames = {}
+
+    if (contractAddress === "" || !tempSelection.includes(contractAddress)) {
+      contractAddress = tempSelection[0]
     } else {
-        updateAddress({ detail: { selectedId: contractAddress }})
+      contractAddress = contractAddress
     }
 
-    for (const selection of selections) {
+    for (const selection of tempSelection) {
       try {
         contractNames[selection] = JSON.parse((await (await fetch(`/${ selection }/contractName`)).text())).replaceAll('"', '')
       } catch {
       }
     }
-    selections = selections.map((selection) => {
+    selections = tempSelection.map((selection) => {
       if (!contractNames[selection]) {
         return undefined
       }
