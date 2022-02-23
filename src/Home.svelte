@@ -29,15 +29,17 @@
 </Router>
 
 <style>
-    :global(body) {
-        background-color: #f9fcff !important;
-    }
+
 
     header {
         width: 60%;
         margin: 0 auto;
         margin-top: 36px;
         text-align: right;
+    }
+
+    :global(.bx--select-input) {
+        margin: 0 !important;
     }
 
     :global(.bx--accordion__item--active .bx--accordion__content) {
