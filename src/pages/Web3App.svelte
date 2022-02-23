@@ -17,6 +17,10 @@
    * changes can be made by the header
    */
   let contractAddress = ""
+
+  $: {
+    contractAddress = contractAddress
+  }
 </script>
 
 <Header bind:contractAddress={contractAddress} chainId="{chainId}"/>

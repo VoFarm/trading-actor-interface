@@ -13,6 +13,7 @@
   export let iterations
   export let counter
   export let transactionExplorer
+  export let upperLimit
 
   /**
    * return color for status tag
@@ -87,7 +88,7 @@
     {#each iterations as iteration}
       <AccordionItem style="margin: 0 auto; text-align-last: center">
         <svelte:fragment slot="title">
-          <h5 class="fragment">Iteration {counter - iterations.indexOf(iteration)}</h5>
+          <h5 class="fragment">Iteration {upperLimit - iterations.indexOf(iteration) + 1}</h5>
           <div class="fragment">
             <Tag type={decideColorForProgress(iteration)}>
               {translateColorToTex(decideColorForProgress(iteration))}

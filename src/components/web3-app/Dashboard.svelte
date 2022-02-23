@@ -1,6 +1,6 @@
 <script>
   import Iterations from "./Iterations.svelte";
-  import { Column, Grid, Row, SkeletonPlaceholder, Tile } from "carbon-components-svelte";
+  import { Column, Grid, Pagination, Row, SkeletonPlaceholder, Tile } from "carbon-components-svelte";
   import Chart from "./Chart.svelte";
   import { connected, chainId as chainIdWeb3 } from 'svelte-web3'
 
@@ -11,6 +11,8 @@
   export let chainId
   let iterations = []
   let graphData = []
+  let page = 1
+  let pageSize = amountOfIterations
   let counter = 0
   let graphCounter = 0
   let successfulIterations = 0
@@ -37,7 +39,7 @@
       secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
 
       try {
-        const response = await (await fetch(`/${ contractAddress }/priceRange?lastID=${ (counter - amountOfPrices) < 0 ? 0 : (counter - amountOfPrices) }`)).json()
+        const response = await (await fetch(`/${ contractAddress }/priceRange?earliestID=${ graphCounter }&lastID=${ (counter - amountOfPrices) < 0 ? 0 : (counter - amountOfPrices) }`)).json()
         graphData = response.map((data) => {
           data = JSON.parse(data)
           return [
@@ -64,10 +66,9 @@
    *
    * @return {Promise<void>}
    */
-  async function fetchIteration() {
+  async function fetchIteration(lastID) {
     if (contractAddress !== "") {
       iterations = []
-      counter = 0
       successfulIterations = 0
       amountIterationsValue = 0
       tradedIterationsValue = 0
@@ -79,7 +80,7 @@
 
       // get past iterations
       try {
-        iterations = await (await fetch(`/${ contractAddress }/iterationRange?lastID=${ (counter - amountOfIterations) < 0 ? 0 : (counter - amountOfIterations) }`)).json()
+        iterations = await (await fetch(`/${ contractAddress }/iterationRange?earliestID=${ Number(counter - (pageSize * page)) + Number(pageSize) }&lastID=${ lastID < 0 ? 0 : lastID }`)).json()
       } catch {
         iterations = []
       }
@@ -134,9 +135,13 @@
   }
 
   $:{
-    fetchIteration()
-    fetchGraphData()
+    fetchIteration(counter - (pageSize * page) + 1)
     contractAddress = contractAddress
+  }
+  $: {
+    contractAddress = contractAddress
+    fetchGraphData()
+    page = 1
   }
 </script>
 <h2></h2>
@@ -184,10 +189,12 @@
         </Column>
       </Row>
     </Grid>
+    <Pagination bind:page="{page}" totalItems={counter} pageSizes={[10, amountOfIterations, 50]} bind:pageSize={pageSize}/>
     {#if iterations.length <= 0}
-      <SkeletonPlaceholder style="height: 400px; width: 100%;"/>
+      <SkeletonPlaceholder style="height: 1400px; width: 100%;"/>
     {:else }
-      <Iterations iterations={iterations} counter={counter} transactionExplorer={transactionExplorer}/>
+      <Iterations iterations={iterations} counter={counter} upperLimit="{counter - (pageSize * page) + pageSize}"
+                  transactionExplorer={transactionExplorer}/>
     {/if}
   </main>
 {/if}

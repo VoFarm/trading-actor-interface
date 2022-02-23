@@ -6,7 +6,7 @@
     Header, HeaderUtilities,
     SideNav, SideNavDivider,
     SideNavItems,
-    SideNavLink, SkeletonPlaceholder
+    SideNavLink, SkeletonPlaceholder, SkipToContent
   } from "carbon-components-svelte";
   import { Dropdown } from "carbon-components-svelte";
   import Renew32 from "carbon-icons-svelte/lib/Renew32";
@@ -16,7 +16,7 @@
   export let contractAddress
   export let chainId
 
-  let isSideNavOpen = true
+  let isSideNavOpen = false
   let selections = []
   const navigate = useNavigate();
 
@@ -62,7 +62,10 @@
   getContractList()
 </script>
 
-<Header company="Volatility Farm" platformName="App Dashboard">
+<Header company="Volatility Farm" platformName="App Dashboard" bind:isSideNavOpen>
+  <svelte:fragment slot="skip-to-content">
+    <SkipToContent/>
+  </svelte:fragment>
   <HeaderUtilities>
     <Account chainId="{chainId}"/>
   </HeaderUtilities>

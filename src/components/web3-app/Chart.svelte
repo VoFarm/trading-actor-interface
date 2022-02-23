@@ -44,6 +44,9 @@
 			"title": primaryName,
 			"scaleType": "linear",
 			"ticks": {"formatter": (value) => formatYAxes(value)},
+      "correspondingDatasets": [
+				primaryName
+			],
 			},
     "right": {
 			"mapsTo": "secondary",
