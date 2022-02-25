@@ -88,6 +88,12 @@
     }
   }
 
+  async function getCounter() {
+    // get max amount of iterations
+    const countResponse = await fetch(`/${ contractAddress }/count`)
+    counter = await countResponse.json()
+  }
+
   /**
    * returns amount of successful iterations
    *
@@ -135,6 +141,7 @@
   }
 
   $:{
+    await getCounter()
     fetchIteration(counter - (pageSize * page) + 1)
     contractAddress = contractAddress
   }
