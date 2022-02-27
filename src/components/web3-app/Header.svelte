@@ -51,12 +51,20 @@
     navigate("/app/deposit")
   }
 
+  function navigateWithdraw() {
+    navigate("/app/withdraw")
+  }
+
   function navigateDashboard() {
     navigate("/app")
   }
 
   function updateAddress(event) {
     contractAddress = event.detail.selectedId
+  }
+
+  $: {
+    contractAddress = contractAddress
   }
 
   getContractList()
@@ -74,6 +82,7 @@
   <SideNavItems>
     <SideNavLink on:click={navigateDashboard} text="Dashboard"/>
     <SideNavLink on:click={navigateDeposit} text="Deposit"/>
+    <SideNavLink on:click={navigateWithdraw} text="Withdraw"/>
     <SideNavDivider/>
     <SideNavLink href="/" text="Home"/>
     <SideNavLink href="https://github.com/VoFarm" text="Source Code"/>
@@ -89,7 +98,7 @@
           id="contractSelector"
           on:select={updateAddress}
           titleText="Contracts"
-          selectedId="{contractAddress}"
+          bind:selectedId="{contractAddress}"
           items={selections}
       />
     {:else}
