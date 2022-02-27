@@ -78,7 +78,7 @@
    *
    * @return {Promise<void>}
    */
-  async function fetchIteration() {
+  async function fetchIteration(lastID) {
     if (contractAddress !== "") {
       iterations = []
       successfulIterations = 0
