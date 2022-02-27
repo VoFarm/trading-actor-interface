@@ -35,7 +35,7 @@
         {/if}
       </Route>
       <Route path="deposit">
-        <Deposit bind:contractAddress={contractAddress} chainId="{chainId}"/>
+        <Deposit transactionExplorer={transactionExplorer} bind:contractAddress={contractAddress} chainId="{chainId}"/>
       </Route>
     </div>
   </Router>
