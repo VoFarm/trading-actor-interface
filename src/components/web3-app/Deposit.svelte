@@ -117,7 +117,7 @@
         return
       }
 
-      const deposit = tradingContract.methods.deposit(contractAddress, sanitizedAmount).encodeABI();
+      const deposit = tradingContract.methods.deposit($selectedAccount, selectedTokenApprove, sanitizedAmount).encodeABI();
 
       try {
         sentDeposit = true
@@ -174,15 +174,20 @@
   }
 
   $: {
-    selectedTokenDeposit = selectedTokenDeposit
-    if (selectedTokenDeposit && $connected) {
-      getAllowance()
+    if ($connected && parseInt($chainIdWeb3, 16) === chainId) {
+      getDepositableTokens(contractAddress)
+      disabledInput = false
+    } else {
+      disabledInput = true
+      //tokens = []
     }
   }
 
   $: {
+    contractAddress = contractAddress
     if ($connected && parseInt($chainIdWeb3, 16) === chainId) {
       getDepositableTokens(contractAddress)
+      getAllowance()
       disabledInput = false
     } else {
       disabledInput = true
