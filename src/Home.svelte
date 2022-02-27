@@ -32,7 +32,7 @@
 
 
     header {
-        width: 60%;
+        width: 100%;
         margin: 0 auto;
         margin-top: 36px;
         text-align: right;

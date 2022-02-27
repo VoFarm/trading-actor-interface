@@ -1,6 +1,6 @@
 <script>
   import Iterations from "./Iterations.svelte";
-  import { Column, Grid, Pagination, Row, SkeletonPlaceholder, Tile } from "carbon-components-svelte";
+  import { Column, Grid, Pagination, Row, SkeletonPlaceholder, SkeletonText, Tile, ToastNotification } from "carbon-components-svelte";
   import Chart from "./Chart.svelte";
   import { connected, chainId as chainIdWeb3 } from 'svelte-web3'
 
@@ -9,18 +9,30 @@
   export let contractAddress
   export let amountOfPrices
   export let chainId
+
+  // requested data
   let iterations = []
   let graphData = []
+
+  // pagitaion
   let page = 1
   let pageSize = amountOfIterations
+
+  // last input for graph and iterations
   let counter = 0
   let graphCounter = 0
-  let successfulIterations = 0
-  let amountIterationsValue = 0
-  let tradedIterationsValue = 0
-  let calculatedFees = 0
+
+  // dashboard
+  let successfulIterations
+  let amountIterationsValue
+  let tradedIterationsValue
+  let calculatedFees
+
+  // meta information
   let primaryName = ""
   let secondaryName = ""
+
+  // wallet info
   let depositedBalance = 0
   let depositedCurrency = "ETH"
   let roi = 5
@@ -77,6 +89,8 @@
       // get max amount of iterations
       const countResponse = await fetch(`/${ contractAddress }/count`)
       counter = await countResponse.json()
+
+      let lastID = counter - (pageSize * page) + 1
 
       // get past iterations
       try {
@@ -135,8 +149,10 @@
   }
 
   $:{
-    fetchIteration(counter - (pageSize * page) + 1)
+    fetchIteration()
     contractAddress = contractAddress
+    page = page
+    pageSize = pageSize
   }
   $: {
     contractAddress = contractAddress
@@ -153,38 +169,60 @@
     {:else }
       <Chart bind:graphData="{graphData}" bind:primaryName={primaryName} bind:secondaryName={secondaryName}/>
     {/if}
+    <h2 style="margin: 48px 0 16px 0;">Personal Dashboard</h2>
+    <div>
+      <Grid narrow class="titleGrid">
+        <Row padding="30px">
+          {#if $connected && parseInt($chainIdWeb3, 16) === chainId}
+            <Column>
+              <Tile>
+                Deposited Balance
+                <div class="userAccount">{depositedBalance} {depositedCurrency}</div>
+              </Tile>
+            </Column>
+            <Column>
+              <Tile>
+                Return On Investment
+                <div class="userAccount" style="color: {roi > 0 ? 'green' : roi < 0 ? 'red' : 'unset'}">{roi}%</div>
+              </Tile>
+            </Column>
+          {:else}
+            <Column>
+              <Tile>Information can be accessed with a Connected Wallet</Tile>
+            </Column>
+          {/if}
+        </Row>
+      </Grid>
+    </div>
+
     <h2 style="margin: 48px 0 16px 0;">Dashboard</h2>
     <Grid narrow class="titleGrid">
-      {#if $connected && parseInt($chainIdWeb3, 16) === chainId}
-        <Row padding="30px">
-          <Column>
-            <Tile>
-              Deposited Balance
-              <div class="userAccount">{depositedBalance} {depositedCurrency}</div>
-            </Tile>
-          </Column>
-          <Column>
-            <Tile>
-              Return On Investment
-              <div class="userAccount" style="color: {roi > 0 ? 'green' : roi < 0 ? 'red' : 'unset'}">{roi}%</div>
-            </Tile>
-          </Column>
-        </Row>
-      {/if}
       <Row padding="30px">
         <Column>
           <Tile>
-            {successfulIterations} / {amountIterationsValue} Successful Iterations
+            {#if successfulIterations && amountIterationsValue}
+              {successfulIterations} / {amountIterationsValue} Successful Iterations
+            {:else}
+              <SkeletonText/>
+            {/if}
           </Tile>
         </Column>
         <Column>
           <Tile>
-            {tradedIterationsValue} Swap Operations
+            {#if tradedIterationsValue}
+              {tradedIterationsValue} Swap Operations
+            {:else}
+              <SkeletonText/>
+            {/if}
           </Tile>
         </Column>
         <Column>
           <Tile>
-            {calculatedFees} Eth Fees in the Past {amountIterationsValue} Transactions
+            {#if calculatedFees && amountIterationsValue}
+              {calculatedFees} Eth Fees in the Past {amountIterationsValue} Transactions
+            {:else}
+              <SkeletonText/>
+            {/if}
           </Tile>
         </Column>
       </Row>
