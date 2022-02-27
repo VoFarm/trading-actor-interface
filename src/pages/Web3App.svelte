@@ -2,6 +2,7 @@
   import Header from "../components/web3-app/Header.svelte";
   import Dashboard from "../components/web3-app/Dashboard.svelte";
   import Deposit from "../components/web3-app/Deposit.svelte";
+  import Withdraw from "../components/web3-app/Withdraw.svelte"
   import { Route, Router } from "svelte-navigator";
   import { Content } from "carbon-components-svelte";
 
@@ -36,6 +37,9 @@
       </Route>
       <Route path="deposit">
         <Deposit transactionExplorer={transactionExplorer} bind:contractAddress={contractAddress} chainId="{chainId}"/>
+      </Route>
+      <Route path="withdraw">
+        <Withdraw transactionExplorer={transactionExplorer} bind:contractAddress={contractAddress} chainId="{chainId}"/>
       </Route>
     </div>
   </Router>
