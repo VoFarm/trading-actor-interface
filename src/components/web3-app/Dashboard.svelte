@@ -50,12 +50,12 @@
       try {
         primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')
       } catch {
-        primaryName = ""
+        primaryName = "primary"
       }
       try {
         secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
       } catch {
-        secondaryName = ""
+        secondaryName = "secondary"
       }
 
       try {
