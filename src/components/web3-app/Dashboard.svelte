@@ -48,7 +48,7 @@
       // get max amount of iterations
       graphCounter = await (await fetch(`/${ contractAddress }/priceCount`)).json()
       try {
-        primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')̨
+        primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')
       } catch {
         primaryName = ""
       }
