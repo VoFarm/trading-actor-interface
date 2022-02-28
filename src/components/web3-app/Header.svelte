@@ -40,10 +40,7 @@
       }
     }
     selections = tempSelection.map((selection) => {
-      if (!contractNames[selection]) {
-        return undefined
-      }
-      return { id: selection, text: `${ contractNames[selection] } (${ selection })` }
+      return { id: selection, text: `${ contractNames[selection] ?? "" } (${ selection })` }
     }).filter((selection) => selection)
   }
 
