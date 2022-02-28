@@ -47,8 +47,16 @@
     if (contractAddress !== "") {
       // get max amount of iterations
       graphCounter = await (await fetch(`/${ contractAddress }/priceCount`)).json()
-      primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')
-      secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
+      try {
+        primaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/primaryName`)).text())).replaceAll('"', '')̨
+      } catch {
+        primaryName = ""
+      }
+      try {
+        secondaryName = String(JSON.parse(await (await fetch(`/${ contractAddress }/secondaryName`)).text())).replaceAll('"', '')
+      } catch {
+        secondaryName = ""
+      }
 
       try {
         const response = await (await fetch(`/${ contractAddress }/priceRange?earliestID=${ graphCounter }&lastID=${ (counter - amountOfPrices) < 0 ? 0 : (counter - amountOfPrices) }`)).json()
