@@ -126,6 +126,7 @@
         })
         completeDeposit = true
       } catch (e) {
+        console.log(e)
         transactions.push({
           title: "Failed",
           kind: "error",
@@ -134,6 +135,7 @@
         })
       }
     } catch (e) {
+      console.log(e)
       transactions.push({
         title: "Failed",
         kind: "error",
