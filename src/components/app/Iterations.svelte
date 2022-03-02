@@ -140,7 +140,7 @@
             <StructuredListBody>
               {#each iteration.messages as message}
                 <StructuredListRow>
-                  <StructuredListCell>{formatDate(message.date)} | {message.message}</StructuredListCell>
+                  <StructuredListCell>{formatDate(message.date)} | {JSON.stringify(message.message)}</StructuredListCell>
                 </StructuredListRow>
               {/each}
             </StructuredListBody>
