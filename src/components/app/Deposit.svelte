@@ -92,16 +92,11 @@
 
   async function depositAmount() {
     try {
-      let sanitizedAmount = Number($web3.utils.toWei($amountDeposit, 'ether')).toFixed(0)
+      let sanitizedAmount = Number(Number($web3.utils.toWei($amountDeposit, 'ether')).toFixed(0))
       const tradingContract = new $web3.eth.Contract(ERC20ABI, TradingContractABI, {});
       await getAllowance($depositTokenSelected)
 
-      console.log($amountDeposit)
-      console.log(Number($web3.utils.toWei($amountAllowance, 'ether')))
-      console.log(Number($web3.utils.toWei($amountAllowance, 'ether')).toFixed(0))
-      console.log(sanitizedAmount)
-
-      if (Number($web3.utils.toWei($amountAllowance, 'ether')).toFixed(0) < sanitizedAmount) {
+      if (Number(Number($web3.utils.toWei($amountAllowance, 'ether')).toFixed(0)) < sanitizedAmount) {
         transactions.push({
           title: "Failed",
           kind: "error",
