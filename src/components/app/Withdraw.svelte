@@ -58,6 +58,7 @@
     availableFunds.set(null)
     try {
       const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
+      console.log(await tokenContract.methods.getEarned().call())
       availableFunds.set($web3.utils.fromWei(await tokenContract.methods.getEarned().call(), 'ether'));
     } catch (e) {
       console.log(e)
