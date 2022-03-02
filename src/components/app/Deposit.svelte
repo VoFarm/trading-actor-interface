@@ -44,11 +44,11 @@
       tokens.set(null)
       const tokenContract = new $web3.eth.Contract(TradingContractABI, contractAddress, {});
       const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
-      const primaryContract = generateContractForBalanceRequest(primaryAddress)
+      const primaryContract = generateContractForBalanceRequest(primaryAddress, $web3)
       const primaryName = await primaryContract.methods.name().call();
 
       const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
-      const secondaryContract = generateContractForBalanceRequest(secondaryAddress)
+      const secondaryContract = generateContractForBalanceRequest(secondaryAddress, $web3)
       const secondaryName = await secondaryContract.methods.name().call();
 
 
