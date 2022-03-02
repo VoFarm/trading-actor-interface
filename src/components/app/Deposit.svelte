@@ -158,7 +158,7 @@
   }
 
   selectedServerSideContract.subscribe(async (contract) => {
-    if (validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
+    if (contract && validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
       index = 0
       tokens.set(null)
       await getUseableTokens(contract.address, $web3)
@@ -167,13 +167,13 @@
   })
 
   approveTokenSelected.subscribe(async (tokenSelected) => {
-    if (validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)) {
+    if (tokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)) {
       await getAllowance(tokenSelected)
     }
   })
 
   depositTokenSelected.subscribe(async (tokenSelected) => {
-    if (validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)) {
+    if (tokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)) {
       await getAllowance(tokenSelected)
     }
   })
@@ -306,7 +306,7 @@
 </div>
 
 <footer>
-  {#if !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
+  {#if $selectedServerSideContract && (!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID))}
     <ToastNotification
         kind="info"
         title="Please Connect Your Wallet"
