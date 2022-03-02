@@ -70,6 +70,7 @@
           caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
         })
       } catch (e) {
+        console.log(e)
         transactions.push({
           title: "Failed",
           kind: "error",
@@ -77,7 +78,8 @@
           caption: ""
         })
       }
-    } catch {
+    } catch (e) {
+      console.log(e)
       transactions.push({
         title: "Failed",
         kind: "error",
@@ -126,6 +128,7 @@
         })
         completeDeposit = true
       } catch (e) {
+        console.log(e)
         transactions.push({
           title: "Failed",
           kind: "error",
@@ -134,6 +137,7 @@
         })
       }
     } catch (e) {
+      console.log(e)
       transactions.push({
         title: "Failed",
         kind: "error",
