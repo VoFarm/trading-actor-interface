@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 
+
 interface Contract {
   address: string,
   primaryTokenName: string | null,
