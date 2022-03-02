@@ -41,7 +41,7 @@
         title: "Success",
         kind: "success",
         subtitle: "Transaction Dispatched for Withdraw",
-        caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
+        caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${tx.transactionHash}</a>`
       })
       completeWithdraw = true
       index = 1

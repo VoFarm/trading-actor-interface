@@ -75,7 +75,7 @@
           title: "Success",
           kind: "success",
           subtitle: "Transaction Dispatched for Approval",
-          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">{tx.transactionHash}</a>`
+          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${tx.transactionHash}</a>`
         })
         completeApproval = true
         await depositAmount(sanitizedAmount)
@@ -119,7 +119,7 @@
           title: "Success",
           kind: "success",
           subtitle: "Transaction Dispatched for Deposit",
-          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">{tx.transactionHash}</a>`
+          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${tx.transactionHash}</a>`
         })
         completeDeposit = true
         index = 2
