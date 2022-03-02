@@ -14,7 +14,7 @@
   import Renew16 from "carbon-icons-svelte/lib/Renew16";
   import { generateContractForBalanceRequest, getUseableTokens, validChain, validConnection } from "../../stores/wallet";
   import { selectedServerSideContract } from "../../stores/contract";
-  import { approveTokenSelected, depositTokenSelected, tokens } from "../../stores/tokenSwap";
+  import { amountApproval, approveTokenSelected, depositTokenSelected, tokens } from "../../stores/tokenSwap";
   import { availableFunds, withdrawTokenSelected } from "../../stores/withdraw";
   import { ERC20ABI } from "./abi/erc20";
 
@@ -66,7 +66,10 @@
     availableFunds.set(null)
     try {
       const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
-      const decimals = Number(await tokenContract.methods.decimals().call())
+
+      const selectedTokenContract = new $web3.eth.Contract(ERC20ABI, $withdrawTokenSelected, {});
+      const decimals = Number(await selectedTokenContract.methods.decimals().call())
+
       availableFunds.set(String(Number(await tokenContract.methods.getEarned().call({ from: $selectedAccount })) * (10 ** -decimals)));
     } catch (e) {
       console.log(e)
