@@ -22,7 +22,7 @@
     tokens
   } from "../../stores/tokenSwap";
   import { selectedServerSideContract } from "../../stores/contract";
-  import { generateContractForBalanceRequest, validChain, validConnection } from "../../stores/wallet";
+  import { generateContractForBalanceRequest, getUseableTokens, validChain, validConnection } from "../../stores/wallet";
   import { withdrawTokenSelected } from "../../stores/withdraw";
 
   let index = 0
@@ -38,32 +38,6 @@
   let sentDeposit = false
 
   let disabledInput = true
-
-  export async function getUseableTokens(contractAddress) {
-    try {
-      tokens.set(null)
-      const tokenContract = new $web3.eth.Contract(TradingContractABI, contractAddress, {});
-      const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
-      const primaryContract = generateContractForBalanceRequest(primaryAddress, $web3)
-      const primaryName = await primaryContract.methods.name().call();
-
-      const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
-      const secondaryContract = generateContractForBalanceRequest(secondaryAddress, $web3)
-      const secondaryName = await secondaryContract.methods.name().call();
-
-
-      tokens.set([
-        { name: primaryName, address: primaryAddress },
-        { name: secondaryName, address: secondaryAddress }
-      ])
-      approveTokenSelected.set(primaryAddress)
-      depositTokenSelected.set(primaryAddress)
-      withdrawTokenSelected.set(primaryAddress)
-    } catch (e) {
-      console.log(e)
-      tokens.set(null)
-    }
-  }
 
   async function getAllowance(tokenAddress) {
     try {
@@ -121,6 +95,11 @@
       let sanitizedAmount = Number($web3.utils.toWei($amountDeposit, 'ether')).toFixed(0)
       const tradingContract = new $web3.eth.Contract(ERC20ABI, TradingContractABI, {});
       await getAllowance($depositTokenSelected)
+
+      console.log($amountDeposit)
+      console.log(Number($web3.utils.toWei($amountAllowance, 'ether')))
+      console.log(Number($web3.utils.toWei($amountAllowance, 'ether')).toFixed(0))
+      console.log(sanitizedAmount)
 
       if (Number($web3.utils.toWei($amountAllowance, 'ether')).toFixed(0) < sanitizedAmount) {
         transactions.push({
@@ -184,7 +163,7 @@
   }
 
   selectedServerSideContract.subscribe(async (contract) => {
-    if (contract && validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
+    if (contract && $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
       index = 0
       tokens.set(null)
       await getUseableTokens(contract.address, $web3)
@@ -210,7 +189,7 @@
   {#if index === 0}
     <div class="form">
       <Form on:submit={approveAmount}>
-        {#if $tokens && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+        {#if $tokens && $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
           {#await $tokens ? new Promise((res) => res(true)) : getUseableTokens($selectedServerSideContract.address, $web3)}
             <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
           {:then _}

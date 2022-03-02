@@ -12,7 +12,7 @@
   import { chainId, connected, web3, selectedAccount } from "svelte-web3";
   import { TradingContractABI } from "./abi/trading.ts";
   import Renew16 from "carbon-icons-svelte/lib/Renew16";
-  import { generateContractForBalanceRequest, validChain, validConnection } from "../../stores/wallet";
+  import { generateContractForBalanceRequest, getUseableTokens, validChain, validConnection } from "../../stores/wallet";
   import { selectedServerSideContract } from "../../stores/contract";
   import { approveTokenSelected, depositTokenSelected, tokens } from "../../stores/tokenSwap";
   import { availableFunds, withdrawTokenSelected } from "../../stores/withdraw";
@@ -22,31 +22,6 @@
   let completeWithdraw = false
   let sentWithdraw = false
   let disabledInput = true
-
-  export async function getUseableTokens(contractAddress) {
-    try {
-      tokens.set(null)
-      const tokenContract = new $web3.eth.Contract(TradingContractABI, contractAddress, {});
-      const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
-      const primaryContract = generateContractForBalanceRequest(primaryAddress)
-      const primaryName = await primaryContract.methods.name().call();
-
-      const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
-      const secondaryContract = generateContractForBalanceRequest(secondaryAddress)
-      const secondaryName = await secondaryContract.methods.name().call();
-
-      tokens.set([
-        { name: primaryName, address: primaryAddress },
-        { name: secondaryName, address: secondaryAddress }
-      ])
-      approveTokenSelected.set(primaryAddress)
-      depositTokenSelected.set(primaryAddress)
-      withdrawTokenSelected.set(primaryAddress)
-    } catch (e) {
-      console.log(e)
-      tokens.set(null)
-    }
-  }
 
   function withdrawAmount() {
     transactions.push({
@@ -76,7 +51,7 @@
   }
 
   selectedServerSideContract.subscribe(async (contract) => {
-    if (validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
+    if ($web3 && validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
       tokens.set(null)
       await getUseableTokens(contract.address, $web3)
       await getBalance()
@@ -92,7 +67,7 @@
 <div id="withdraw">
   <div class="form">
     <Form on:submit={withdrawAmount}>
-      {#if validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+      {#if $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
         {#await $tokens ? new Promise((res) => res(true)) : getUseableTokens($selectedServerSideContract.address, $web3)}
           <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
         {:then _}
