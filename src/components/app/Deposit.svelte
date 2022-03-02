@@ -22,8 +22,7 @@
     tokens
   } from "../../stores/tokenSwap";
   import { selectedServerSideContract } from "../../stores/contract";
-  import { generateContractForBalanceRequest, getUseableTokens, validChain, validConnection } from "../../stores/wallet";
-  import { withdrawTokenSelected } from "../../stores/withdraw";
+  import { getUseableTokens, validChain, validConnection } from "../../stores/wallet";
 
   let index = 0
 
@@ -51,7 +50,7 @@
 
   async function approveAmount() {
     try {
-      let sanitizedAmount = Number($web3.utils.toWei($amountApproval, 'ether')).toFixed(0)
+      let sanitizedAmount = web3.utils.toBN($web3.utils.toWei($amountApproval, 'ether'))
       const tokenContract = new $web3.eth.Contract(ERC20ABI, $approveTokenSelected, {});
       const approve = tokenContract.methods.approve($selectedServerSideContract.address, sanitizedAmount).encodeABI();
 
@@ -92,11 +91,12 @@
 
   async function depositAmount() {
     try {
-      let sanitizedAmount = Number(Number($web3.utils.toWei($amountDeposit, 'ether')).toFixed(0))
+      let sanitizedAmount = $web3.utils.toBN($web3.utils.toWei($amountDeposit, 'ether'))
+      let inputAmount = $web3.utils.toBN($web3.utils.toWei($amountAllowance, 'ether'))
       const tradingContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
       await getAllowance($depositTokenSelected)
 
-      if (Number(Number($web3.utils.toWei($amountAllowance, 'ether')).toFixed(0)) < sanitizedAmount) {
+      if (inputAmount.cmp(sanitizedAmount) === -1) {
         transactions.push({
           title: "Failed",
           kind: "error",
@@ -107,12 +107,12 @@
         return
       }
 
-      const deposit = tradingContract.methods.deposit($depositTokenSelected, sanitizedAmount).encodeABI();
+      const deposit = tradingContract.methods.deposit($depositTokenSelected, inputAmount).encodeABI();
 
       try {
         sentDeposit = true
         let tx = (await $web3.eth.sendTransaction({
-          gasLimit: await tradingContract.methods.deposit($depositTokenSelected, sanitizedAmount).estimateGas({ from: $selectedAccount }),
+          gasLimit: await tradingContract.methods.deposit($depositTokenSelected, inputAmount).estimateGas({ from: $selectedAccount }),
           from: $selectedAccount,
           to: $selectedServerSideContract.address,
           value: 0,
@@ -126,7 +126,6 @@
         })
         completeDeposit = true
       } catch (e) {
-        console.log(e)
         transactions.push({
           title: "Failed",
           kind: "error",
@@ -135,7 +134,6 @@
         })
       }
     } catch (e) {
-      console.log(e)
       transactions.push({
         title: "Failed",
         kind: "error",
@@ -158,6 +156,19 @@
     completeApproval = false
     index = 0
   }
+
+  async function getMetaData() {
+    if ($web3 && validConnection(connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)) {
+      index = 0
+      tokens.set(null)
+      await getUseableTokens($selectedServerSideContract.address, $web3)
+      await getAllowance($approveTokenSelected)
+    }
+  }
+
+  chainId.subscribe((id) => getMetaData())
+
+  connected.subscribe((connected) => getMetaData())
 
   selectedServerSideContract.subscribe(async (contract) => {
     if (contract && $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
