@@ -1,5 +1,4 @@
 import { writable } from "svelte/store";
-import { amountOfPrices, fetchGraphData } from "./prices";
 
 interface Contract {
   address: string,
@@ -42,6 +41,7 @@ export async function fetchContractList(lastAddress?: string) {
 export const selectedServerSideContract = writable<Contract>(null);
 
 export async function newContractSelected(address: string) {
+  try {
   const primaryTokenName = await (await fetch(`/${ address }/primaryName`)).json()
   const secondaryTokenName = await (await fetch(`/${ address }/secondaryName`)).json()
   const chainID = await (await fetch(`/${ address }/chainID`)).json()
@@ -58,4 +58,7 @@ export async function newContractSelected(address: string) {
     priceCounter: Number(priceCounter),
     iterationCounter: Number(iterationCounter)
   })
+  } catch {
+    selectedServerSideContract.set(null)
+  }
 }
