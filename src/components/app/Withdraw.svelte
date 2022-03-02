@@ -16,6 +16,7 @@
   import { selectedServerSideContract } from "../../stores/contract";
   import { approveTokenSelected, depositTokenSelected, tokens } from "../../stores/tokenSwap";
   import { availableFunds, withdrawTokenSelected } from "../../stores/withdraw";
+  import { ERC20ABI } from "./abi/erc20";
 
   let transactions = []
   // withdraw
@@ -23,13 +24,33 @@
   let sentWithdraw = false
   let disabledInput = true
 
-  function withdrawAmount() {
-    transactions.push({
-      title: "Failed",
-      kind: "error",
-      subtitle: "Transaction Failed for Withdraw",
-      caption: ""
-    })
+  async function withdrawAmount() {
+    try {
+      const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
+      const withdraw = tokenContract.methods.withdraw().encodeABI();
+
+      let tx = (await $web3.eth.sendTransaction({
+        gasLimit: await tokenContract.methods.withdraw().estimateGas({ from: $selectedAccount }),
+        from: $selectedAccount,
+        to: $selectedServerSideContract.address,
+        value: 0,
+        data: withdraw
+      }))
+      transactions.push({
+        title: "Success",
+        kind: "success",
+        subtitle: "Transaction Dispatched for Withdraw",
+        caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
+      })
+    } catch (e) {
+      console.log(e)
+      transactions.push({
+        title: "Failed",
+        kind: "error",
+        subtitle: "Transaction Failed for Withdraw",
+        caption: ""
+      })
+    }
     transactions = transactions
   }
 
@@ -37,7 +58,7 @@
     availableFunds.set(null)
     try {
       const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
-      availableFunds.set($web3.utils.fromWei(await tokenContract.methods.getEarned($withdrawTokenSelected).call(), 'ether'));
+      availableFunds.set($web3.utils.fromWei(await tokenContract.methods.getEarned().call(), 'ether'));
     } catch (e) {
       console.log(e)
       availableFunds.set(null)
