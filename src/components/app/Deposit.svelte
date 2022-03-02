@@ -187,7 +187,7 @@
 <div id="deposit">
   <div class="form">
     <Form on:submit={approveAmount}>
-      {#if $tokens && $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+      {#if $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
         {#await $tokens ? new Promise((res) => res(true)) : getUseableTokens($selectedServerSideContract.address, $web3)}
           <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
         {:then _}
