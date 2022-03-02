@@ -236,8 +236,8 @@
   </div>
   <div>
     <ProgressIndicator spaceEqually={true} preventChangeOnClick currentIndex={index}>
-      <ProgressStep complete={completeApproval} label="Approval"/>
-      <ProgressStep complete={completeDeposit} label="Deposit"/>
+      <ProgressStep bind:complete={completeApproval} label="Approval"/>
+      <ProgressStep bind:complete={completeDeposit} label="Deposit"/>
     </ProgressIndicator>
   </div>
 
