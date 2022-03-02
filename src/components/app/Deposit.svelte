@@ -233,26 +233,28 @@
     </ProgressIndicator>
   </div>
 
-  <div style="margin: 24px 0">
-    <StructuredList>
-      <StructuredListHead>
-        <StructuredListRow head>
-          <StructuredListCell head>Status</StructuredListCell>
-          <StructuredListCell head>Message</StructuredListCell>
-          <StructuredListCell head>Transaction</StructuredListCell>
-        </StructuredListRow>
-      </StructuredListHead>
-      {#each transactions as transaction}
-        <StructuredListBody>
-          <StructuredListRow>
-            <StructuredListCell>{transaction.title}</StructuredListCell>
-            <StructuredListCell>{transaction.subtitle}</StructuredListCell>
-            <StructuredListCell>{@html transaction.caption}</StructuredListCell>
+  {#if transactions.length > 0}
+    <div style="margin: 48px 0">
+      <StructuredList>
+        <StructuredListHead>
+          <StructuredListRow head>
+            <StructuredListCell head>Status</StructuredListCell>
+            <StructuredListCell head>Message</StructuredListCell>
+            <StructuredListCell head>Transaction</StructuredListCell>
           </StructuredListRow>
-        </StructuredListBody>
-      {/each}
-    </StructuredList>
-  </div>
+        </StructuredListHead>
+        {#each transactions as transaction}
+          <StructuredListBody>
+            <StructuredListRow>
+              <StructuredListCell>{transaction.title}</StructuredListCell>
+              <StructuredListCell>{transaction.subtitle}</StructuredListCell>
+              <StructuredListCell>{@html transaction.caption}</StructuredListCell>
+            </StructuredListRow>
+          </StructuredListBody>
+        {/each}
+      </StructuredList>
+    </div>
+  {/if}
 
 </div>
 
