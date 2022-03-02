@@ -13,12 +13,12 @@ export async function fetchGraphData(contract, amountOfPrices) {
         {
           "group": contract.primaryTokenName,
           "date": data.date,
-          "primary": Number(data.primary) / (10 ** 18)
+          "primary": Number(data.primary)
         },
         {
           "group": contract.secondaryTokenName,
           "date": data.date,
-          "secondary": Number(data.secondary) / (10 ** 18)
+          "secondary": Number(data.secondary)
         }
       ]
     }).flatMap(value => value))
