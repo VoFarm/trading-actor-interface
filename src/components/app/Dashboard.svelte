@@ -102,7 +102,7 @@
                 <Column>
                   <Tile>
                     Deposited Balance
-                    <div class="userAccount">{(investment.currentBalance * (10 ** (-18))).toFixed(18)} {investment.depositedCurrency}</div>
+                    <div class="userAccount">{(investment.currentBalance)} {investment.depositedCurrency}</div>
                   </Tile>
                 </Column>
               {/each}
