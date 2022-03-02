@@ -108,7 +108,7 @@
       const deposit = tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).encodeABI();
 
       try {
-        sentDeposit = true
+        sentApproval = true
         let tx = (await $web3.eth.sendTransaction({
           gasLimit: await tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).estimateGas({ from: $selectedAccount }),
           from: $selectedAccount,
@@ -123,6 +123,7 @@
           caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
         })
         completeDeposit = true
+        index = 2
       } catch (e) {
         console.log(e)
         transactions.push({
@@ -142,7 +143,7 @@
       })
     }
     transactions = transactions
-    sentDeposit = false
+    sentApproval = false
   }
 
   async function getMetaData() {
