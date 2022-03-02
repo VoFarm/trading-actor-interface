@@ -181,6 +181,12 @@
       await getAllowance(tokenSelected)
     }
   })
+
+  tokens.subscribe((tokenList) => {
+    index = 0
+    completeDeposit = false
+    completeApproval = false
+  })
 </script>
 
 
