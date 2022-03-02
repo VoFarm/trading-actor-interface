@@ -62,17 +62,21 @@ export async function getUseableTokens(contractAddress, web3) {
 export async function getAccountDashboardData(selectedAccount, selectedContract, web3) {
   const tokenContract = new web3.eth.Contract(TradingContractABI, selectedContract, {});
 
-  const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
-  const primaryContract = generateContractForBalanceRequest(primaryAddress, web3)
-  const primaryName = await primaryContract.methods.name().call();
+  const depositableTokenAddress = await tokenContract.methods.getCurrentToken().call()
+  const depositableTokenContract = generateContractForBalanceRequest(depositableTokenAddress, web3)
+  const depositableTokenName = await depositableTokenContract.methods.name().call();
 
+  /*
   const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
   const secondaryContract = generateContractForBalanceRequest(secondaryAddress, web3)
   const secondaryName = await secondaryContract.methods.name().call();
+   */
 
   accountDashboardData.set([
-    { currentBalance: Number(await tokenContract.methods.getEarned(primaryAddress).call()), depositedCurrency: primaryName },
-    { currentBalance: Number(await tokenContract.methods.getEarned(secondaryAddress).call()), depositedCurrency: secondaryName },
+    {
+      currentBalance: Number(await tokenContract.methods.getEarned().call({ from: selectedAccount })),
+      depositedCurrency: depositableTokenName
+    }
   ]);
 }
 

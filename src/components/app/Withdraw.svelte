@@ -6,7 +6,7 @@
     InlineLoading,
     Select,
     SelectItem, SkeletonPlaceholder,
-    SkeletonText,
+    SkeletonText, StructuredList, StructuredListBody, StructuredListCell, StructuredListHead, StructuredListRow,
     ToastNotification
   } from "carbon-components-svelte";
   import { chainId, connected, web3, selectedAccount } from "svelte-web3";
@@ -138,6 +138,30 @@
       </div>
     </Form>
   </div>
+
+  {#if transactions.length > 0}
+    <div style="margin: 48px 0">
+      <StructuredList>
+        <StructuredListHead>
+          <StructuredListRow head>
+            <StructuredListCell head>Status</StructuredListCell>
+            <StructuredListCell head>Message</StructuredListCell>
+            <StructuredListCell head>Transaction</StructuredListCell>
+          </StructuredListRow>
+        </StructuredListHead>
+        {#each transactions as transaction}
+          <StructuredListBody>
+            <StructuredListRow>
+              <StructuredListCell>{transaction.title}</StructuredListCell>
+              <StructuredListCell>{transaction.subtitle}</StructuredListCell>
+              <StructuredListCell>{@html transaction.caption}</StructuredListCell>
+            </StructuredListRow>
+          </StructuredListBody>
+        {/each}
+      </StructuredList>
+    </div>
+  {/if}
+
 </div>
 
 <footer>
@@ -148,17 +172,6 @@
         subtitle="Deposits can be done with a Connected Wallet"
     />
   {/if}
-  {#each transactions as transaction}
-    <ToastNotification
-        title="{transaction.title}"
-        kind="{transaction.kind}"
-        subtitle="{transaction.subtitle}"
-    >
-      <div style="margin-bottom: 15px">
-        <strong>{@html transaction.caption}</strong>
-      </div>
-    </ToastNotification>
-  {/each}
 </footer>
 
 <style>
