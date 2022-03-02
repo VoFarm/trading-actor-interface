@@ -120,15 +120,17 @@
         </FormGroup>
       {/if}
 
-      {#if $tokens && $availableFunds && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+      {#if $tokens && ($availableFunds >= 0) && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
         <div class="balance">
           Balance: {$availableFunds} {$tokens.find((token) => token.address === $withdrawTokenSelected).name}
           <Button style="margin: 2px 8px" on:click={getBalance} kind="ghost" iconDescription="Reload" icon={Renew16}/>
         </div>
-      {:else}
+      {:else if validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
         <p class="balance">
           <SkeletonText style="height: 40px"/>
         </p>
+      {:else}
+        <div style="height: 40px;"></div>
       {/if}
 
       <div class="actionButtons">
