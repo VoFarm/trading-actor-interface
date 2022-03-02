@@ -9,7 +9,7 @@ export const tokens = writable<Array<{ name: String, address: String }> | null>(
 export async function getUseableTokens(contractAddress, web3deac) {
   try {
     tokens.set(null)
-    const tokenContract = new ( defaultEvmStores.$web3.eth.Contract(TradingContractABI, contractAddress, {}));
+    const tokenContract = new defaultEvmStores.$web3.eth.Contract(TradingContractABI, contractAddress, {});
     const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
     const primaryContract = generateContractForBalanceRequest(primaryAddress)
     const primaryName = await primaryContract.methods.name().call();
