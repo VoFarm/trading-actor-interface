@@ -265,7 +265,7 @@
 
         <FormGroup>
           <TextInput bind:value={$amountDeposit}
-                     disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
+                     disabled={$approveTokenSelected && !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
                      inline labelText="Amount" placeholder="0.2"/>
         </FormGroup>
         {#if $tokens && ($amountAllowance !== null) && $depositTokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}

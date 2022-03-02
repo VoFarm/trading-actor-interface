@@ -26,7 +26,8 @@ export async function getUseableTokens(contractAddress, web3) {
     approveTokenSelected.set(primaryAddress)
     depositTokenSelected.set(primaryAddress)
     withdrawTokenSelected.set(primaryAddress)
-  } catch {
+  } catch (e) {
+    console.log(e)
     tokens.set(null)
   }
 }

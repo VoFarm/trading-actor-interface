@@ -11,14 +11,14 @@
   }
 </script>
 
-{#if validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+{#if $selectedServerSideContract && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
   <div>
     <Wallet24 id="walletAccount"/>
   </div>
   <p class="accountAddress">
     {$selectedAccount}
   </p>
-{:else if validConnection($connected, $selectedAccount) && !validChain($chainId, $selectedServerSideContract.chainID)}
+{:else if $selectedServerSideContract && validConnection($connected, $selectedAccount) && !validChain($chainId, $selectedServerSideContract.chainID)}
   <p class="accountAddress">
     Please switch to chain {$selectedServerSideContract.chainID}
   </p>
