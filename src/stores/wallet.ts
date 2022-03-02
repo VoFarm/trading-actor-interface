@@ -1,10 +1,9 @@
 import { writable } from "svelte/store";
 import { TradingContractABI } from "../components/app/abi/trading";
 import { defaultContract } from "../components/app/abi/defaultContract";
-import { web3 } from "svelte-web3";
 import { approveTokenSelected, depositTokenSelected, tokens } from "./tokenSwap";
 import { withdrawTokenSelected } from "./withdraw";
-import { fetchContractList, selectedServerSideContract } from "./contract";
+import { fetchContractList } from "./contract";
 
 export function validConnection(connected, selectedAccount) {
   return !!connected && !!selectedAccount
@@ -34,22 +33,25 @@ export async function getUseableTokens(contractAddress, web3) {
   try {
     tokens.set(null)
     const tokenContract = new web3.eth.Contract(TradingContractABI, contractAddress, {});
-    const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
-    const primaryContract = generateContractForBalanceRequest(primaryAddress, web3)
-    const primaryName = await primaryContract.methods.name().call();
 
+
+    const depositableTokenAddress = await tokenContract.methods.getCurrentToken().call()
+    const depositableTokenContract = generateContractForBalanceRequest(depositableTokenAddress, web3)
+    const depositableTokenName = await depositableTokenContract.methods.name().call();
+
+    /*
     const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
     const secondaryContract = generateContractForBalanceRequest(secondaryAddress, web3)
     const secondaryName = await secondaryContract.methods.name().call();
+     */
 
     tokens.set([
-      { name: primaryName, address: primaryAddress },
-      { name: secondaryName, address: secondaryAddress }
+      { name: depositableTokenName, address: depositableTokenAddress }
     ])
 
-    approveTokenSelected.set(primaryAddress)
-    depositTokenSelected.set(primaryAddress)
-    withdrawTokenSelected.set(primaryAddress)
+    approveTokenSelected.set(depositableTokenAddress)
+    depositTokenSelected.set(depositableTokenAddress)
+    withdrawTokenSelected.set(depositableTokenAddress)
   } catch (e) {
     console.log(e)
     tokens.set(null)
