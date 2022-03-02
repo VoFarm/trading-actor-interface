@@ -32,7 +32,6 @@ export const accountDashboardData = writable<Array<AccountDashboard>>([])
 export async function getUseableTokens(contractAddress, web3) {
   try {
     tokens.set(null)
-    /*
     const tokenContract = new web3.eth.Contract(TradingContractABI, contractAddress, {});
     const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
     const primaryContract = generateContractForBalanceRequest(primaryAddress, web3)
@@ -46,15 +45,10 @@ export async function getUseableTokens(contractAddress, web3) {
       { name: primaryName, address: primaryAddress },
       { name: secondaryName, address: secondaryAddress }
     ])
-    */
 
-    tokens.set([
-      { name: "WETH", address: "0xc778417E063141139Fce010982780140Aa0cD5Ab" },
-      { name: "DAI", address: "0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa" }
-    ])
-    approveTokenSelected.set("0xc778417E063141139Fce010982780140Aa0cD5Ab")
-    depositTokenSelected.set("0xc778417E063141139Fce010982780140Aa0cD5Ab")
-    withdrawTokenSelected.set("0xc778417E063141139Fce010982780140Aa0cD5Ab")
+    approveTokenSelected.set(primaryAddress)
+    depositTokenSelected.set(primaryAddress)
+    withdrawTokenSelected.set(primaryAddress)
   } catch (e) {
     console.log(e)
     tokens.set(null)
