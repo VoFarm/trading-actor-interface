@@ -2,11 +2,19 @@
   import {
     Button,
     Form,
-    FormGroup, InlineLoading,
+    FormGroup,
+    InlineLoading,
     ProgressIndicator,
     ProgressStep,
     Select,
-    SelectItem, SkeletonPlaceholder, SkeletonText,
+    SelectItem,
+    SkeletonPlaceholder,
+    SkeletonText,
+    StructuredList,
+    StructuredListBody,
+    StructuredListCell,
+    StructuredListHead,
+    StructuredListRow,
     TextInput,
     ToastNotification
   } from "carbon-components-svelte";
@@ -69,6 +77,8 @@
           subtitle: "Transaction Dispatched for Approval",
           caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
         })
+        completeApproval = true
+        depositAmount(sanitizedAmount)
       } catch (e) {
         console.log(e)
         transactions.push({
@@ -91,30 +101,16 @@
     sentApproval = false
   }
 
-  async function depositAmount() {
+  async function depositAmount(sanitizedAmount) {
+    index = 1
     try {
-      let sanitizedAmount = $web3.utils.toBN($web3.utils.toWei($amountDeposit, 'ether'))
-      let inputAmount = $web3.utils.toBN($web3.utils.toWei($amountAllowance, 'ether'))
       const tradingContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
-      await getAllowance($depositTokenSelected)
-
-      if (inputAmount.cmp(sanitizedAmount) === -1) {
-        transactions.push({
-          title: "Failed",
-          kind: "error",
-          subtitle: "Amount to Deposit is Higher than Allowance",
-          caption: "Please Adjust the Allowance"
-        })
-        transactions = transactions
-        return
-      }
-
-      const deposit = tradingContract.methods.deposit($depositTokenSelected, inputAmount).encodeABI();
+      const deposit = tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).encodeABI();
 
       try {
         sentDeposit = true
         let tx = (await $web3.eth.sendTransaction({
-          gasLimit: await tradingContract.methods.deposit($depositTokenSelected, inputAmount).estimateGas({ from: $selectedAccount }),
+          gasLimit: await tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).estimateGas({ from: $selectedAccount }),
           from: $selectedAccount,
           to: $selectedServerSideContract.address,
           value: 0,
@@ -147,18 +143,6 @@
     }
     transactions = transactions
     sentDeposit = false
-  }
-
-  function skipApprove() {
-    completeApproval = true
-    index = 1
-    depositTokenSelected.set($approveTokenSelected)
-  }
-
-  function toApprove() {
-    approveTokenSelected.set($depositTokenSelected)
-    completeApproval = false
-    index = 0
   }
 
   async function getMetaData() {
@@ -198,128 +182,77 @@
 
 
 <div id="deposit">
-  {#if index === 0}
-    <div class="form">
-      <Form on:submit={approveAmount}>
-        {#if $tokens && $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
-          {#await $tokens ? new Promise((res) => res(true)) : getUseableTokens($selectedServerSideContract.address, $web3)}
-            <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
-          {:then _}
-            <FormGroup>
-              <Select
-                  disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-                  id="select-1" labelText="Token To Approve" bind:selected={$approveTokenSelected}>
-                {#each $tokens as token}
-                  <SelectItem value="{token.address}" text="{token.name}"/>
-                {/each}
-              </Select>
-            </FormGroup>
-          {:catch error}
-            <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
-          {/await}
-        {:else}
-          <FormGroup>
-            <Select disabled={true} id="select-1" labelText="Token To Approve"/>
-          </FormGroup>
-        {/if}
-
-        <FormGroup>
-          <TextInput bind:value={$amountApproval}
-                     disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-                     inline labelText="Amount" placeholder="0.2"/>
-        </FormGroup>
-        {#if $tokens && ($amountAllowance !== null) && $approveTokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
-          <div class="allowance">
-            <Button on:click={() => getAllowance($approveTokenSelected)} kind="ghost" iconDescription="Reload" icon={Renew16}/>
-            Allowance: {$amountAllowance} {$tokens.find((token) => token.address === $approveTokenSelected).name}
-          </div>
-        {:else if $tokens && !$amountAllowance && $approveTokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
-          <p class="allowance">
-            <SkeletonText style="height: 40px"/>
-          </p>
-        {:else}
-          <div style="height: 45px"></div>
-        {/if}
-        <div class="actionButtons">
-          <div style="display: flex;flex-direction: row;">
-            <Button
-                disabled={!$approveTokenSelected || !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-                type="submit">
-              Approve
-            </Button>
-            {#if sentApproval}
-              <InlineLoading style="margin-left: 15px;" description="Sending Transaction..."/>
-            {/if}
-          </div>
-          <Button
-              disabled={!$tokens || !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-              on:click={skipApprove} kind="ghost">
-            Continue
-          </Button>
-        </div>
-      </Form>
-    </div>
-  {/if}
-
-  {#if index === 1}
-    <div class="form">
-      <Form on:submit={depositAmount}>
-        {#if $tokens && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+  <div class="form">
+    <Form on:submit={approveAmount}>
+      {#if $tokens && $web3 && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+        {#await $tokens ? new Promise((res) => res(true)) : getUseableTokens($selectedServerSideContract.address, $web3)}
+          <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
+        {:then _}
           <FormGroup>
             <Select
                 disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-                id="select-1" labelText="Token To Deposit" bind:selected={$depositTokenSelected}>
+                id="select-1" labelText="Token To Deposit" bind:selected={$approveTokenSelected}>
               {#each $tokens as token}
                 <SelectItem value="{token.address}" text="{token.name}"/>
               {/each}
             </Select>
           </FormGroup>
-        {:else}
-          <FormGroup>
-            <Select disabled={true} id="select-1" labelText="Token To Deposit"/>
-          </FormGroup>
-        {/if}
-
+        {:catch error}
+          <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
+        {/await}
+      {:else}
         <FormGroup>
-          <TextInput bind:value={$amountDeposit}
-                     disabled={$approveTokenSelected && !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-                     inline labelText="Amount" placeholder="0.2"/>
+          <Select disabled={true} id="select-1" labelText="Token To Deposit"/>
         </FormGroup>
-        {#if $tokens && ($amountAllowance !== null) && $depositTokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
-          <div class="allowance">
-            <Button on:click={() => getAllowance($depositTokenSelected)} kind="ghost" iconDescription="Reload" icon={Renew16}/>
-            Allowance: {$amountAllowance} {$tokens.find((token) => token.address === $depositTokenSelected).name}
-          </div>
-        {:else if $tokens && !$amountAllowance && $depositTokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
-          <p class="allowance">
-            <SkeletonText style="height: 40px"/>
-          </p>
-        {:else}
-          <div style="height: 45px"></div>
-        {/if}
-        <div class="actionButtons">
-          <div style="display: flex;flex-direction: row;">
-            <Button disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-                    type="submit">Deposit
-            </Button>
-            {#if sentDeposit}
-              <InlineLoading style="margin-left: 15px;" description="Sending Transaction..."/>
-            {/if}
-          </div>
-          <Button disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-                  on:click={toApprove} kind="ghost">Back
-          </Button>
-        </div>
-      </Form>
-    </div>
-  {/if}
+      {/if}
 
+      <FormGroup>
+        <TextInput bind:value={$amountApproval}
+                   disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
+                   inline labelText="Amount" placeholder="0.2"/>
+      </FormGroup>
+      <div class="actionButtons">
+        <div style="display: flex;flex-direction: row;">
+          <Button
+              disabled={!$approveTokenSelected || !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
+              type="submit">
+            Deposit
+          </Button>
+          {#if sentApproval}
+            <InlineLoading style="margin-left: 15px;" description="Sending Transaction..."/>
+          {/if}
+        </div>
+      </div>
+    </Form>
+  </div>
   <div>
     <ProgressIndicator spaceEqually={true} preventChangeOnClick currentIndex={index}>
       <ProgressStep complete={completeApproval} label="Approval"/>
       <ProgressStep complete={completeDeposit} label="Deposit"/>
     </ProgressIndicator>
   </div>
+
+  <div style="margin: 24px 0">
+    <StructuredList>
+      <StructuredListHead>
+        <StructuredListRow head>
+          <StructuredListCell head>Status</StructuredListCell>
+          <StructuredListCell head>Message</StructuredListCell>
+          <StructuredListCell head>Transaction</StructuredListCell>
+        </StructuredListRow>
+      </StructuredListHead>
+      {#each transactions as transaction}
+        <StructuredListBody>
+          <StructuredListRow>
+            <StructuredListCell>{transaction.title}</StructuredListCell>
+            <StructuredListCell>{transaction.subtitle}</StructuredListCell>
+            <StructuredListCell>{@html transaction.caption}</StructuredListCell>
+          </StructuredListRow>
+        </StructuredListBody>
+      {/each}
+    </StructuredList>
+  </div>
+
 </div>
 
 <footer>
@@ -330,17 +263,6 @@
         subtitle="Deposits can be done with a Connected Wallet"
     />
   {/if}
-  {#each transactions as transaction}
-    <ToastNotification
-        title="{transaction.title}"
-        kind="{transaction.kind}"
-        subtitle="{transaction.subtitle}"
-    >
-      <div style="margin-bottom: 15px">
-        <strong>{@html transaction.caption}</strong>
-      </div>
-    </ToastNotification>
-  {/each}
 </footer>
 <style>
     .form {

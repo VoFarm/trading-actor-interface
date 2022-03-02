@@ -1,8 +1,4 @@
 import { writable } from "svelte/store";
-import { withdrawTokenSelected } from "./withdraw";
-import { TradingContractABI } from "../components/app/abi/trading";
-import { generateContractForBalanceRequest } from "./wallet";
-import { defaultEvmStores } from 'svelte-web3'
 
 export const tokens = writable<Array<{ name: String, address: String }> | null>(null)
 

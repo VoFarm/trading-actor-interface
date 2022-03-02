@@ -122,7 +122,7 @@
       <Row padding="30px">
         <Column>
           <Tile>
-            {#if successfulIterations && amountIterationsValue}
+            {#if successfulIterations >= 0 && amountIterationsValue >= 0}
               {successfulIterations} / {amountIterationsValue} Successful Iterations
             {:else}
               <SkeletonText/>
@@ -131,7 +131,7 @@
         </Column>
         <Column>
           <Tile>
-            {#if tradedIterationsValue}
+            {#if tradedIterationsValue >= 0}
               {tradedIterationsValue} Swap Operations
             {:else}
               <SkeletonText/>
@@ -140,7 +140,7 @@
         </Column>
         <Column>
           <Tile>
-            {#if calculatedFees && amountIterationsValue}
+            {#if calculatedFees >= 0 && amountIterationsValue >= 0}
               {calculatedFees} Eth Fees in the Past {amountIterationsValue} Transactions
             {:else}
               <SkeletonText/>
