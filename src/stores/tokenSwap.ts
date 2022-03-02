@@ -2,14 +2,15 @@ import { writable } from "svelte/store";
 import { withdrawTokenSelected } from "./withdraw";
 import { TradingContractABI } from "../components/app/abi/trading";
 import { generateContractForBalanceRequest } from "./wallet";
+import { web3 } from 'svelte-web3'
 
 export const tokens = writable<Array<{ name: String, address: String }> | null>(null)
 
-export async function getUseableTokens(contractAddress, web3) {
+export async function getUseableTokens(contractAddress, web3deac) {
   try {
     tokens.set(null)
 
-    const tokenContract = new web3.eth.Contract(TradingContractABI, contractAddress, {});
+    const tokenContract = new ($web3.eth.Contract(TradingContractABI, contractAddress, {}));
     const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
     const primaryContract = generateContractForBalanceRequest(primaryAddress)
     const primaryName = await primaryContract.methods.name().call();
