@@ -184,7 +184,7 @@
   {#if index === 0}
     <div class="form">
       <Form on:submit={approveAmount}>
-        {#if validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+        {#if $tokens && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
           {#await $tokens ? new Promise((res) => res(true)) : getUseableTokens($selectedServerSideContract.address, $web3)}
             <SkeletonPlaceholder style="height: 64px; width: 100%; margin:18px 0;"/>
           {:then _}
@@ -247,7 +247,7 @@
   {#if index === 1}
     <div class="form">
       <Form on:submit={depositAmount}>
-        {#if validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+        {#if $tokens && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
           <FormGroup>
             <Select
                 disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
