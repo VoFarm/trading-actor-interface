@@ -4,6 +4,7 @@ import { defaultContract } from "../components/app/abi/defaultContract";
 import { web3 } from "svelte-web3";
 import { approveTokenSelected, depositTokenSelected, tokens } from "./tokenSwap";
 import { withdrawTokenSelected } from "./withdraw";
+import { fetchContractList, selectedServerSideContract } from "./contract";
 
 export function validConnection(connected, selectedAccount) {
   return !!connected && !!selectedAccount
@@ -52,6 +53,7 @@ export async function getUseableTokens(contractAddress, web3) {
   } catch (e) {
     console.log(e)
     tokens.set(null)
+    await fetchContractList(contractAddress)
   }
 }
 
