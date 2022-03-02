@@ -75,7 +75,7 @@
           title: "Success",
           kind: "success",
           subtitle: "Transaction Dispatched for Approval",
-          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${tx.transactionHash}</a>`
+          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${ tx.transactionHash }</a>`
         })
         completeApproval = true
         await depositAmount(sanitizedAmount)
@@ -119,7 +119,7 @@
           title: "Success",
           kind: "success",
           subtitle: "Transaction Dispatched for Deposit",
-          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${tx.transactionHash}</a>`
+          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${ tx.transactionHash }</a>`
         })
         completeDeposit = true
         index = 2
@@ -164,6 +164,10 @@
       await getUseableTokens(contract.address, $web3)
       await getAllowance($approveTokenSelected)
     }
+
+    index = 0
+    completeDeposit = false
+    completeApproval = false
   })
 
   approveTokenSelected.subscribe(async (tokenSelected) => {
@@ -207,14 +211,14 @@
 
       <FormGroup>
         <TextInput bind:value={$amountApproval}
-                   disabled={!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
+                   disabled={!$tokens || !$approveTokenSelected || !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
                    inline labelText="Amount" placeholder="0.2"/>
       </FormGroup>
       <div class="actionButtons">
         <div style="display: flex;flex-direction: row;">
           <Button
-              disabled={!$approveTokenSelected || !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-              type="submit">
+              disabled={!$tokens || !$approveTokenSelected || !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
+              type="submit" style="margin: 2px 8px">
             Deposit
           </Button>
           {#if sentApproval}

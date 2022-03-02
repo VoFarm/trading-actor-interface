@@ -25,6 +25,11 @@
   let sentWithdraw = false
   let disabledInput = true
 
+  selectedServerSideContract.subscribe((contract) => {
+    index = 0
+    completeWithdraw = false
+  })
+
   async function withdrawAmount() {
     try {
       const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
@@ -41,7 +46,7 @@
         title: "Success",
         kind: "success",
         subtitle: "Transaction Dispatched for Withdraw",
-        caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${tx.transactionHash}</a>`
+        caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">${ tx.transactionHash }</a>`
       })
       completeWithdraw = true
       index = 1
@@ -118,21 +123,20 @@
       {#if $tokens && $availableFunds && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
         <div class="balance">
           Balance: {$availableFunds} {$tokens.find((token) => token.address === $withdrawTokenSelected).name}
-          <Button on:click={getBalance} kind="ghost" iconDescription="Reload" icon={Renew16}/>
+          <Button style="margin: 2px 8px" on:click={getBalance} kind="ghost" iconDescription="Reload" icon={Renew16}/>
         </div>
-      {:else if !$availableFunds && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
+      {:else}
         <p class="balance">
           <SkeletonText style="height: 40px"/>
         </p>
-      {:else}
-        <div style="height: 45px"></div>
       {/if}
 
       <div class="actionButtons">
         <div style="display: flex;flex-direction: row;">
           <Button
               disabled={!$tokens || !$availableFunds || !validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID)}
-              type="submit">Withdraw Complete Balance
+              type="submit">
+            Withdraw Balance
           </Button>
           {#if sentWithdraw}
             <InlineLoading style="margin-left: 15px;" description="Sending Transaction..."/>
@@ -192,7 +196,7 @@
     #withdraw {
         display: flex;
         flex-direction: column;
-        width: max-content;
+        max-width: 800px;
         align-items: stretch;
         margin: 0 auto;
     }
