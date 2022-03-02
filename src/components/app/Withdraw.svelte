@@ -3,7 +3,7 @@
     Button,
     Form,
     FormGroup,
-    InlineLoading,
+    InlineLoading, ProgressIndicator, ProgressStep,
     Select,
     SelectItem, SkeletonPlaceholder,
     SkeletonText, StructuredList, StructuredListBody, StructuredListCell, StructuredListHead, StructuredListRow,
@@ -20,6 +20,7 @@
 
   let transactions = []
   // withdraw
+  let index = 0
   let completeWithdraw = false
   let sentWithdraw = false
   let disabledInput = true
@@ -42,6 +43,8 @@
         subtitle: "Transaction Dispatched for Withdraw",
         caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
       })
+      completeWithdraw = true
+      index = 1
     } catch (e) {
       console.log(e)
       transactions.push({
@@ -138,6 +141,12 @@
       </div>
     </Form>
   </div>
+  <div>
+    <ProgressIndicator spaceEqually={true} preventChangeOnClick currentIndex={index}>
+      <ProgressStep complete={completeWithdraw} label="Withdraw"/>
+    </ProgressIndicator>
+  </div>
+
 
   {#if transactions.length > 0}
     <div style="margin: 48px 0">
@@ -165,7 +174,7 @@
 </div>
 
 <footer>
-  {#if disabledInput}
+  {#if $selectedServerSideContract && (!validConnection($connected, $selectedAccount) || !validChain($chainId, $selectedServerSideContract.chainID))}
     <ToastNotification
         kind="info"
         title="Please Connect Your Wallet"

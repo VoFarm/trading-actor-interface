@@ -75,10 +75,10 @@
           title: "Success",
           kind: "success",
           subtitle: "Transaction Dispatched for Approval",
-          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
+          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">{tx.transactionHash}</a>`
         })
         completeApproval = true
-        depositAmount(sanitizedAmount)
+        await depositAmount(sanitizedAmount)
       } catch (e) {
         console.log(e)
         transactions.push({
@@ -108,7 +108,6 @@
       const deposit = tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).encodeABI();
 
       try {
-        sentApproval = true
         let tx = (await $web3.eth.sendTransaction({
           gasLimit: await tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).estimateGas({ from: $selectedAccount }),
           from: $selectedAccount,
@@ -120,7 +119,7 @@
           title: "Success",
           kind: "success",
           subtitle: "Transaction Dispatched for Deposit",
-          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">Transaction</a>`
+          caption: `<a href="${ $selectedServerSideContract.explorer }tx/${ tx.transactionHash }" target="_blank">{tx.transactionHash}</a>`
         })
         completeDeposit = true
         index = 2
@@ -143,7 +142,6 @@
       })
     }
     transactions = transactions
-    sentApproval = false
   }
 
   async function getMetaData() {
