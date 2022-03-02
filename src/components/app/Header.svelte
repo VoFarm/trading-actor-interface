@@ -93,7 +93,8 @@
       <SkeletonPlaceholder style="height: 45px; width: 100%;"/>
     {/if}
     <div id="refreshButton">
-      <Button on:click={() => updateDashboard($selectedServerSideContract.address)} kind="primary" iconDescription="Reload" icon={Renew32}/>
+      <Button on:click={() => $selectedServerSideContract ? updateDashboard($selectedServerSideContract.address) : null} kind="primary"
+              iconDescription="Reload" icon={Renew32}/>
     </div>
   </div>
 </Content>
