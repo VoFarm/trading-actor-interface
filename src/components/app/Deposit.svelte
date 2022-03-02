@@ -93,7 +93,7 @@
   async function depositAmount() {
     try {
       let sanitizedAmount = Number(Number($web3.utils.toWei($amountDeposit, 'ether')).toFixed(0))
-      const tradingContract = new $web3.eth.Contract(ERC20ABI, TradingContractABI, {});
+      const tradingContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
       await getAllowance($depositTokenSelected)
 
       if (Number(Number($web3.utils.toWei($amountAllowance, 'ether')).toFixed(0)) < sanitizedAmount) {
