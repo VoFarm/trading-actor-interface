@@ -37,8 +37,9 @@
     availableFunds.set(null)
     try {
       const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
-      availableFunds.set(Number($web3.utils.fromWei(await tokenContract.methods.getEarned($withdrawTokenSelected).call()), 'ether'));
-    } catch {
+      availableFunds.set($web3.utils.fromWei(await tokenContract.methods.getEarned($withdrawTokenSelected).call(), 'ether'));
+    } catch (e) {
+      console.log(e)
       availableFunds.set(null)
       transactions.push({
         title: "Failed",
