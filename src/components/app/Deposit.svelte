@@ -235,7 +235,7 @@
     </Form>
   </div>
   <div>
-    <ProgressIndicator spaceEqually={true} preventChangeOnClick currentIndex={index}>
+    <ProgressIndicator spaceEqually={true} preventChangeOnClick bind:currentIndex={index}>
       <ProgressStep bind:complete={completeApproval} label="Approval"/>
       <ProgressStep bind:complete={completeDeposit} label="Deposit"/>
     </ProgressIndicator>
