@@ -20,10 +20,12 @@
   "dependencies": {
     "@carbon/charts-svelte": "^0.54.12",
     "@rollup/plugin-replace": "^3.1.0",
+    "@rollup/plugin-typescript": "^8.3.1",
     "carbon-components-svelte": "^0.58.2",
     "carbon-icons-svelte": "^10.44.4",
     "sirv-cli": "^2.0.0",
     "svelte-navigator": "^3.1.5",
+    "svelte-preprocess": "^4.10.4",
     "svelte-web3": "^3.3.6"
   }
 }

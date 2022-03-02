@@ -5,6 +5,8 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import replace from '@rollup/plugin-replace';
+import autoProcess from 'svelte-preprocess'
+import typescript from '@rollup/plugin-typescript'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -53,11 +55,13 @@ export default {
     file: 'public/build/bundle.js'
   },
   plugins: [
+    typescript(),
     replace({
       preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     svelte({
+      preprocess: autoProcess(),
       compilerOptions: {
         // enable run-time checks when not in production
         dev: !production

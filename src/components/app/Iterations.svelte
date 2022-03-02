@@ -77,8 +77,8 @@
    * @param iteration
    * @return {string}
    */
-  function formatDate(iteration) {
-    const date = new Date(iteration.startDate)
+  function formatDate(dateString) {
+    const date = new Date(dateString)
     return date.toDateString() + " " + date.toTimeString()
   }
 </script>
@@ -104,7 +104,7 @@
             {/if}
           </div>
           <div class="fragment">
-            {formatDate(iteration)}
+            {formatDate(iteration.startDate)}
           </div>
         </svelte:fragment>
         <div class="contentWrapper">
@@ -123,7 +123,7 @@
                 {#each iteration.tx as transaction}
                   <StructuredListRow>
                     <StructuredListCell>
-                      <Link href="{transactionExplorer}{transaction.tx}">{transaction.tx}</Link>
+                      <Link href="{transactionExplorer}tx/{transaction.tx}" target="_blank">{transaction.tx}</Link>
                     </StructuredListCell>
                     <StructuredListCell>{transaction.descriptor}</StructuredListCell>
                     <StructuredListCell>{transaction.gasPrice}</StructuredListCell>
@@ -140,7 +140,7 @@
             <StructuredListBody>
               {#each iteration.messages as message}
                 <StructuredListRow>
-                  <StructuredListCell>{message}</StructuredListCell>
+                  <StructuredListCell>{formatDate(message.date)} | {message.message}</StructuredListCell>
                 </StructuredListRow>
               {/each}
             </StructuredListBody>
