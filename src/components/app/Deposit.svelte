@@ -58,8 +58,9 @@
 
   async function approveAmount() {
     try {
-      let sanitizedAmount = $web3.utils.toBN($web3.utils.toWei($amountApproval, 'ether'))
       const tokenContract = new $web3.eth.Contract(ERC20ABI, $approveTokenSelected, {});
+      const decimals = Number(tokenContract.methods.decimals().call())
+      let sanitizedAmount = $web3.utils.toBN($web3.utils.toWei($amountApproval, 'ether')).mul(10 ** (-18 + decimals))
       const approve = tokenContract.methods.approve($selectedServerSideContract.address, sanitizedAmount).encodeABI();
 
       try {

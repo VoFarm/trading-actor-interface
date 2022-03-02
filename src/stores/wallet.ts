@@ -65,6 +65,7 @@ export async function getAccountDashboardData(selectedAccount, selectedContract,
   const depositableTokenAddress = await tokenContract.methods.getCurrentToken().call()
   const depositableTokenContract = generateContractForBalanceRequest(depositableTokenAddress, web3)
   const depositableTokenName = await depositableTokenContract.methods.name().call();
+  const depositableTokenDecimals = await depositableTokenContract.methods.decimals().call();
 
   /*
   const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
@@ -74,7 +75,7 @@ export async function getAccountDashboardData(selectedAccount, selectedContract,
 
   accountDashboardData.set([
     {
-      currentBalance: Number(await tokenContract.methods.getEarned().call({ from: selectedAccount })),
+      currentBalance: Number(await tokenContract.methods.getEarned().call({ from: selectedAccount })) * (10 ** -depositableTokenDecimals),
       depositedCurrency: depositableTokenName
     }
   ]);

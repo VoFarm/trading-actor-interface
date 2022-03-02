@@ -66,8 +66,8 @@
     availableFunds.set(null)
     try {
       const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
-      console.log(await tokenContract.methods.getEarned().call({ from: $selectedAccount }))
-      availableFunds.set($web3.utils.fromWei(await tokenContract.methods.getEarned().call({ from: $selectedAccount }), 'ether'));
+      const decimals = Number(tokenContract.methods.decimals().call())
+      availableFunds.set(String(Number(await tokenContract.methods.getEarned().call({ from: $selectedAccount })) * (10 ** -decimals)));
     } catch (e) {
       console.log(e)
       availableFunds.set(null)
