@@ -2,13 +2,16 @@
   import "carbon-components-svelte/css/white.css";
   import { Router, Route } from "svelte-navigator";
   import Root from "./pages/Root.svelte";
-  import Web3App from "./pages/Web3App.svelte";
+  import Web3App from "./pages/App.svelte";
   import Header from "./components/root/Header.svelte";
+  import { pageSize } from "./stores/iterations";
+  import { amountOfPrices as amountOfPricesWritable } from "./stores/prices";
 
   export let amountOfIterations
-  export let transactionExplorer
   export let amountOfPrices
-  export let chainId
+
+  pageSize.set(amountOfIterations)
+  amountOfPricesWritable.set(amountOfPrices)
 
   let url = "";
 </script>
@@ -22,19 +25,15 @@
       <Root/>
     </Route>
     <Route path="app/*">
-      <Web3App chainId="{chainId}" amountOfIterations="{amountOfIterations}" transactionExplorer="{transactionExplorer}"
-               amountOfPrices="{amountOfPrices}"/>
+      <Web3App/>
     </Route>
   </div>
 </Router>
 
 <style>
-
-
     header {
-        width: 100%;
-        margin: 0 auto;
-        margin-top: 36px;
+        width: 65%;
+        margin: 36px auto 0;
         text-align: right;
     }
 

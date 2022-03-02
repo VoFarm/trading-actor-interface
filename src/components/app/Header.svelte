@@ -12,39 +12,33 @@
   import Renew32 from "carbon-icons-svelte/lib/Renew32";
   import { useNavigate } from "svelte-navigator";
   import Account from "./Account.svelte";
-
-  export let contractAddress
-  export let chainId
+  import { contractList, fetchContractList, newContractSelected, selectedServerSideContract } from "../../stores/contract.ts";
+  import { contractNames } from "../../stores/contract";
+  import { page } from "../../stores/iterations";
+  import { graphData } from "../../stores/prices";
 
   let isSideNavOpen = false
-  let selections = []
   const navigate = useNavigate();
 
-  async function getContractList() {
-    const response = await fetch("/contractList")
-
-    // parse one lined list
-    let tempSelection = (await response.text()).split(",")
-    let contractNames = {}
-
-    if (contractAddress === "" || !tempSelection.includes(contractAddress)) {
-      contractAddress = tempSelection[0]
-    } else {
-      contractAddress = contractAddress
-    }
-
-    for (const selection of tempSelection) {
+  function createDropdownList(contractList, contractNameDict) {
+    return contractList.map((contract) => {
       try {
-        contractNames[selection] = JSON.parse((await (await fetch(`/${ selection }/contractName`)).text())).replaceAll('"', '')
+        return { id: contract, text: `${ contractNameDict[contract] ?? "" } (${ contract })` }
       } catch {
-      }
-    }
-    selections = tempSelection.map((selection) => {
-      if (!contractNames[selection]) {
         return undefined
       }
-      return { id: selection, text: `${ contractNames[selection] } (${ selection })` }
-    }).filter((selection) => selection)
+    }).filter((contract) => contract)
+  }
+
+  function updateDashboard(address) {
+    graphData.set(null)
+    fetchContractList(address)
+  }
+
+  function updateAddress(event) {
+    page.set(1)
+    graphData.set(null)
+    newContractSelected(event.detail.selectedId)
   }
 
   function navigateDeposit() {
@@ -59,15 +53,7 @@
     navigate("/app")
   }
 
-  function updateAddress(event) {
-    contractAddress = event.detail.selectedId
-  }
-
-  $: {
-    contractAddress = contractAddress
-  }
-
-  getContractList()
+  fetchContractList()
 </script>
 
 <Header company="Volatility Farm" platformName="App Dashboard" bind:isSideNavOpen>
@@ -75,7 +61,9 @@
     <SkipToContent/>
   </svelte:fragment>
   <HeaderUtilities>
-    <Account chainId="{chainId}"/>
+    {#if $selectedServerSideContract && $selectedServerSideContract.chainID}
+      <Account/>
+    {/if}
   </HeaderUtilities>
 </Header>
 <SideNav bind:isOpen={isSideNavOpen}>
@@ -93,19 +81,19 @@
 
 <Content>
   <div id="contentWrapper">
-    {#if selections.length !== 0}
+    {#if $selectedServerSideContract && $contractList.length !== 0}
       <Dropdown
           id="contractSelector"
           on:select={updateAddress}
           titleText="Contracts"
-          bind:selectedId="{contractAddress}"
-          items={selections}
+          selectedId="{$selectedServerSideContract.address}"
+          items={createDropdownList($contractList, $contractNames)}
       />
     {:else}
       <SkeletonPlaceholder style="height: 45px; width: 100%;"/>
     {/if}
     <div id="refreshButton">
-      <Button on:click={getContractList} kind="primary" iconDescription="Reload" icon={Renew32}/>
+      <Button on:click={() => updateDashboard($selectedServerSideContract.address)} kind="primary" iconDescription="Reload" icon={Renew32}/>
     </div>
   </div>
 </Content>
