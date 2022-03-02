@@ -7,21 +7,47 @@
     Select,
     SelectItem, SkeletonPlaceholder,
     SkeletonText,
-    TextInput,
     ToastNotification
   } from "carbon-components-svelte";
   import { chainId, connected, web3, selectedAccount } from "svelte-web3";
   import { TradingContractABI } from "./abi/trading.ts";
   import Renew16 from "carbon-icons-svelte/lib/Renew16";
-  import { validChain, validConnection } from "../../stores/wallet";
+  import { generateContractForBalanceRequest, validChain, validConnection } from "../../stores/wallet";
   import { selectedServerSideContract } from "../../stores/contract";
-  import { getUseableTokens, tokens } from "../../stores/tokenSwap";
+  import { approveTokenSelected, depositTokenSelected, tokens } from "../../stores/tokenSwap";
   import { availableFunds, withdrawTokenSelected } from "../../stores/withdraw";
+
   let transactions = []
   // withdraw
   let completeWithdraw = false
   let sentWithdraw = false
   let disabledInput = true
+
+  export async function getUseableTokens(contractAddress) {
+    try {
+      tokens.set(null)
+      const tokenContract = new $web3.eth.Contract(TradingContractABI, contractAddress, {});
+      const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
+      const primaryContract = generateContractForBalanceRequest(primaryAddress)
+      const primaryName = await primaryContract.methods.name().call();
+
+      const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
+      const secondaryContract = generateContractForBalanceRequest(secondaryAddress)
+      const secondaryName = await secondaryContract.methods.name().call();
+
+      tokens.set([
+        { name: primaryName, address: primaryAddress },
+        { name: secondaryName, address: secondaryAddress }
+      ])
+      approveTokenSelected.set(primaryAddress)
+      depositTokenSelected.set(primaryAddress)
+      withdrawTokenSelected.set(primaryAddress)
+    } catch (e) {
+      console.log(e)
+      tokens.set(null)
+    }
+  }
+
   function withdrawAmount() {
     transactions.push({
       title: "Failed",
@@ -31,6 +57,7 @@
     })
     transactions = transactions
   }
+
   async function getBalance() {
     availableFunds.set(null)
     try {
@@ -47,6 +74,7 @@
       transactions = transactions
     }
   }
+
   selectedServerSideContract.subscribe(async (contract) => {
     if (validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
       tokens.set(null)
@@ -140,6 +168,7 @@
         box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.10);
         padding: 36px;
     }
+
     #withdraw {
         display: flex;
         flex-direction: column;
@@ -147,6 +176,7 @@
         align-items: stretch;
         margin: 0 auto;
     }
+
     .balance {
         display: flex;
         flex-direction: row;
@@ -155,12 +185,14 @@
         text-align: start;
         color: #00000099;
     }
+
     .actionButtons {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin-top: 25px;
     }
+
     footer {
         position: fixed;
         bottom: 0;

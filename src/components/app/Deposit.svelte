@@ -19,11 +19,11 @@
     amountApproval, amountDeposit,
     approveTokenSelected,
     depositTokenSelected,
-    getUseableTokens,
     tokens
   } from "../../stores/tokenSwap";
   import { selectedServerSideContract } from "../../stores/contract";
-  import { validChain, validConnection } from "../../stores/wallet";
+  import { generateContractForBalanceRequest, validChain, validConnection } from "../../stores/wallet";
+  import { withdrawTokenSelected } from "../../stores/withdraw";
 
   let index = 0
 
@@ -38,6 +38,32 @@
   let sentDeposit = false
 
   let disabledInput = true
+
+  export async function getUseableTokens(contractAddress) {
+    try {
+      tokens.set(null)
+      const tokenContract = new $web3.eth.Contract(TradingContractABI, contractAddress, {});
+      const primaryAddress = await tokenContract.methods.getPrimaryToken().call()
+      const primaryContract = generateContractForBalanceRequest(primaryAddress)
+      const primaryName = await primaryContract.methods.name().call();
+
+      const secondaryAddress = await tokenContract.methods.getSecondaryToken().call()
+      const secondaryContract = generateContractForBalanceRequest(secondaryAddress)
+      const secondaryName = await secondaryContract.methods.name().call();
+
+
+      tokens.set([
+        { name: primaryName, address: primaryAddress },
+        { name: secondaryName, address: secondaryAddress }
+      ])
+      approveTokenSelected.set(primaryAddress)
+      depositTokenSelected.set(primaryAddress)
+      withdrawTokenSelected.set(primaryAddress)
+    } catch (e) {
+      console.log(e)
+      tokens.set(null)
+    }
+  }
 
   async function getAllowance(tokenAddress) {
     try {
