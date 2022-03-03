@@ -96,7 +96,7 @@
           title: "Failed",
           kind: "error",
           subtitle: `Transaction Failed for Approval`,
-          caption: `${ e }`
+          caption: `${ e.message }`
         })
       }
     } catch (e) {
@@ -104,7 +104,7 @@
         title: "Failed",
         kind: "error",
         subtitle: `Input for Transaction is Wrong`,
-        caption: `${ e }`
+        caption: `${ e.message }`
       })
     }
     transactions = transactions
@@ -137,7 +137,7 @@
           title: "Failed",
           kind: "error",
           subtitle: `Transaction Failed for Deposit`,
-          caption: `${ e }`
+          caption: `${ e.message }`
         })
       }
     } catch (e) {
@@ -145,7 +145,7 @@
         title: "Failed",
         kind: "error",
         subtitle: `Input for Transaction is Wrong`,
-        caption: `${ e }`
+        caption: `${ e.message }`
       })
     }
     transactions = transactions

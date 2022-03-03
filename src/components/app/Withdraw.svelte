@@ -58,7 +58,7 @@
         title: "Failed",
         kind: "error",
         subtitle: `Transaction Failed for Withdraw`,
-        caption: `${ e }`
+        caption: `${ e.message }`
       })
     }
     transactions = transactions

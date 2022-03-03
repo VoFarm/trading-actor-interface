@@ -97,6 +97,9 @@
         <Row padding="30px">
           {#if validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)}
             {#await getAccountDashboardData($selectedAccount, $selectedServerSideContract.address, $web3)}
+              <Column>
+                <SkeletonText style="height: 64px"/>
+              </Column>
             {:then _}
               {#each $accountDashboardData as investment}
                 <Column>
