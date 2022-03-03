@@ -18,7 +18,7 @@
     TextInput,
     ToastNotification
   } from "carbon-components-svelte";
-  import { web3, connected, chainId, selectedAccount } from 'svelte-web3'
+  import { web3, connected, chainId, selectedAccount, makeContractStore } from 'svelte-web3'
   import { TradingContractABI } from "./abi/trading.ts";
   import { ERC20ABI } from "./abi/erc20.ts";
   import Renew16 from "carbon-icons-svelte/lib/Renew16";
@@ -58,7 +58,7 @@
 
   async function approveAmount() {
     try {
-      const tokenContract = new $web3.eth.Contract(ERC20ABI, $approveTokenSelected, {});
+      const tokenContract = makeContractStore(ERC20ABI, $approveTokenSelected)
       const decimals = Number(await tokenContract.methods.decimals().call())
       console.log($web3.utils.toBN($web3.utils.toWei($amountApproval, 'ether')).toString())
       console.log($web3.utils.toBN(10).pow($web3.utils.toBN(-18 + decimals)).toString())
@@ -69,7 +69,6 @@
         sentApproval = true
         let tx = (await $web3.eth.sendTransaction({
           gasLimit: await tokenContract.methods.approve($selectedServerSideContract.address, sanitizedAmount).estimateGas({ from: $selectedAccount }),
-          from: $selectedAccount,
           to: $approveTokenSelected,
           value: 0,
           data: approve
@@ -107,13 +106,12 @@
   async function depositAmount(sanitizedAmount) {
     index = 1
     try {
-      const tradingContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
+      const tradingContract = makeContractStore(TradingContractABI, $selectedServerSideContract.address)
       const deposit = tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).encodeABI();
 
       try {
         let tx = (await $web3.eth.sendTransaction({
           gasLimit: await tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).estimateGas({ from: $selectedAccount }),
-          from: $selectedAccount,
           to: $selectedServerSideContract.address,
           value: 0,
           data: deposit
