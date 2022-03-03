@@ -92,21 +92,19 @@
         completeApproval = true
         await depositAmount(sanitizedAmount)
       } catch (e) {
-        console.log(e)
         transactions.push({
           title: "Failed",
           kind: "error",
-          subtitle: "Transaction Failed for Approval",
-          caption: ""
+          subtitle: `Transaction Failed for Approval`,
+          caption: `${ e }`
         })
       }
     } catch (e) {
-      console.log(e)
       transactions.push({
         title: "Failed",
         kind: "error",
-        subtitle: "Input for Transaction is Wrong",
-        caption: ""
+        subtitle: `Input for Transaction is Wrong`,
+        caption: `${ e }`
       })
     }
     transactions = transactions
@@ -135,21 +133,19 @@
         completeDeposit = true
         index = 2
       } catch (e) {
-        console.log(e)
         transactions.push({
           title: "Failed",
           kind: "error",
-          subtitle: "Transaction Failed for Deposit",
-          caption: ""
+          subtitle: `Transaction Failed for Deposit`,
+          caption: `${ e }`
         })
       }
     } catch (e) {
-      console.log(e)
       transactions.push({
         title: "Failed",
         kind: "error",
-        subtitle: "Input for Transaction is Wrong",
-        caption: ""
+        subtitle: `Input for Transaction is Wrong`,
+        caption: `${ e }`
       })
     }
     transactions = transactions

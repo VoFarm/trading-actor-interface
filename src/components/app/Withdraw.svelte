@@ -54,12 +54,11 @@
       completeWithdraw = true
       index = 1
     } catch (e) {
-      console.log(e)
       transactions.push({
         title: "Failed",
         kind: "error",
-        subtitle: "Transaction Failed for Withdraw",
-        caption: ""
+        subtitle: `Transaction Failed for Withdraw`,
+        caption: `${ e }`
       })
     }
     transactions = transactions
@@ -72,15 +71,8 @@
 
       availableFunds.set(String(Number(await $tokenContract.methods.getEarned().call({ from: $selectedAccount })) * (10 ** -decimals)));
     } catch (e) {
-      console.log(e)
       availableFunds.set(null)
-      setTimeout(() => getBalance, 1000)
-      transactions.push({
-        title: "Failed",
-        kind: "error",
-        subtitle: "Couldn't Fetch Balance",
-        caption: ""
-      })
+      setTimeout(() => getBalance(), 1000)
       transactions = transactions
     }
   }
