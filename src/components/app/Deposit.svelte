@@ -36,6 +36,9 @@
 
   let transactions = []
 
+  let tokenContract
+  let tradingContract
+
   // approval
   let completeApproval = false
   let sentApproval = false
@@ -58,7 +61,6 @@
 
   async function approveAmount() {
     try {
-      const tokenContract = makeContractStore(ERC20ABI, $approveTokenSelected)
       const decimals = Number(await $tokenContract.methods.decimals().call())
       console.log($web3.utils.toBN($web3.utils.toWei($amountApproval, 'ether')).toString())
       console.log($web3.utils.toBN(10).pow($web3.utils.toBN(-18 + decimals)).toString())
@@ -69,6 +71,7 @@
         sentApproval = true
         let tx = (await $web3.eth.sendTransaction({
           gasLimit: await $tokenContract.methods.approve($selectedServerSideContract.address, sanitizedAmount).estimateGas({ from: $selectedAccount }),
+          from: $selectedAccount,
           to: $approveTokenSelected,
           value: 0,
           data: approve
@@ -106,12 +109,12 @@
   async function depositAmount(sanitizedAmount) {
     index = 1
     try {
-      const tradingContract = makeContractStore(TradingContractABI, $selectedServerSideContract.address)
       const deposit = $tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).encodeABI();
 
       try {
         let tx = (await $web3.eth.sendTransaction({
           gasLimit: await $tradingContract.methods.deposit($approveTokenSelected, sanitizedAmount).estimateGas({ from: $selectedAccount }),
+          from: $selectedAccount,
           to: $selectedServerSideContract.address,
           value: 0,
           data: deposit
@@ -165,7 +168,9 @@
       await getUseableTokens(contract.address, $web3)
       await getAllowance($approveTokenSelected)
     }
-
+    if (contract && contract.address) {
+      tradingContract = makeContractStore(TradingContractABI, contract.address)
+    }
     index = 0
     completeDeposit = false
     completeApproval = false
@@ -174,6 +179,10 @@
   approveTokenSelected.subscribe(async (tokenSelected) => {
     if (tokenSelected && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)) {
       await getAllowance(tokenSelected)
+    }
+
+    if (tokenSelected) {
+      tokenContract = makeContractStore(ERC20ABI, tokenSelected)
     }
   })
 
