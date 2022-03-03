@@ -60,10 +60,12 @@
   }
 
   async function approveAmount() {
+    index = 0
+    completeApproval = false
+    completeDeposit = false
+
     try {
       const decimals = Number(await $tokenContract.methods.decimals().call())
-      console.log($web3.utils.toBN($web3.utils.toWei($amountApproval, 'ether')).toString())
-      console.log($web3.utils.toBN(10).pow($web3.utils.toBN(-18 + decimals)).toString())
       let sanitizedAmount = $web3.utils.toBN($web3.utils.toWei($amountApproval, 'ether')).div($web3.utils.toBN(10).pow($web3.utils.toBN(18 - decimals)))
       const approve = $tokenContract.methods.approve($selectedServerSideContract.address, sanitizedAmount).encodeABI();
 

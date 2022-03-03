@@ -9,7 +9,7 @@
     SkeletonText, StructuredList, StructuredListBody, StructuredListCell, StructuredListHead, StructuredListRow,
     ToastNotification
   } from "carbon-components-svelte";
-  import { chainId, connected, web3, selectedAccount } from "svelte-web3";
+  import { chainId, connected, web3, selectedAccount, makeContractStore } from "svelte-web3";
   import { TradingContractABI } from "./abi/trading.ts";
   import Renew16 from "carbon-icons-svelte/lib/Renew16";
   import { generateContractForBalanceRequest, getUseableTokens, validChain, validConnection } from "../../stores/wallet";
@@ -18,6 +18,8 @@
   import { availableFunds, withdrawTokenSelected } from "../../stores/withdraw";
   import { ERC20ABI } from "./abi/erc20";
 
+  let tokenContract
+  let selectedTokenContract
   let transactions = []
   // withdraw
   let index = 0
@@ -25,18 +27,15 @@
   let sentWithdraw = false
   let disabledInput = true
 
-  selectedServerSideContract.subscribe((contract) => {
+  async function withdrawAmount() {
     index = 0
     completeWithdraw = false
-  })
 
-  async function withdrawAmount() {
     try {
-      const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
-      const withdraw = tokenContract.methods.withdraw().encodeABI();
+      const withdraw = $tokenContract.methods.withdraw().encodeABI();
 
       let tx = (await $web3.eth.sendTransaction({
-        gasLimit: await tokenContract.methods.withdraw().estimateGas({ from: $selectedAccount }),
+        gasLimit: await $tokenContract.methods.withdraw().estimateGas({ from: $selectedAccount }),
         from: $selectedAccount,
         to: $selectedServerSideContract.address,
         value: 0,
@@ -65,12 +64,9 @@
   async function getBalance() {
     availableFunds.set(null)
     try {
-      const tokenContract = new $web3.eth.Contract(TradingContractABI, $selectedServerSideContract.address, {});
+      const decimals = Number(await $selectedTokenContract.methods.decimals().call())
 
-      const selectedTokenContract = new $web3.eth.Contract(ERC20ABI, $withdrawTokenSelected, {});
-      const decimals = Number(await selectedTokenContract.methods.decimals().call())
-
-      availableFunds.set(String(Number(await tokenContract.methods.getEarned().call({ from: $selectedAccount })) * (10 ** -decimals)));
+      availableFunds.set(String(Number(await $tokenContract.methods.getEarned().call({ from: $selectedAccount })) * (10 ** -decimals)));
     } catch (e) {
       console.log(e)
       availableFunds.set(null)
@@ -85,6 +81,12 @@
   }
 
   selectedServerSideContract.subscribe(async (contract) => {
+    index = 0
+    completeWithdraw = false
+    if (contract && contract.address) {
+      tokenContract = makeContractStore(TradingContractABI, contract.address)
+    }
+
     if ($web3 && validConnection($connected, $selectedAccount) && validChain($chainId, contract.chainID)) {
       tokens.set(null)
       await getUseableTokens(contract.address, $web3)
@@ -95,6 +97,11 @@
     if ($tokens && validConnection($connected, $selectedAccount) && validChain($chainId, $selectedServerSideContract.chainID)) {
       await getBalance()
     }
+
+    if (tokenSelected) {
+      selectedTokenContract = makeContractStore(ERC20ABI, tokenSelected)
+    }
+
   })
 
   tokens.subscribe((tokenList) => {
