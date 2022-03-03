@@ -30,6 +30,10 @@
   async function withdrawAmount() {
     index = 0
     completeWithdraw = false
+    transactions = []
+    index = index
+    completeWithdraw = completeWithdraw
+    transactions = transactions
 
     try {
       const withdraw = $tokenContract.methods.withdraw().encodeABI();
@@ -70,6 +74,7 @@
     } catch (e) {
       console.log(e)
       availableFunds.set(null)
+      setTimeout(() => getBalance, 1000)
       transactions.push({
         title: "Failed",
         kind: "error",

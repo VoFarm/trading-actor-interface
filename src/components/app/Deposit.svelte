@@ -63,6 +63,11 @@
     index = 0
     completeApproval = false
     completeDeposit = false
+    transactions = []
+    completeApproval = completeApproval
+    completeDeposit = completeDeposit
+    index = index
+    transactions = []
 
     try {
       const decimals = Number(await $tokenContract.methods.decimals().call())
